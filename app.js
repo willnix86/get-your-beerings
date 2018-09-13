@@ -1,6 +1,20 @@
 const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
+let userLocation;
 
-//1 User searches for a city
+//Get user location
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            let pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            return userLocation = pos;
+        });
+    }
+}
+
+//User searches for a city
 function watchSubmit() {
 
     $('#submit').click(function(e) {
@@ -62,4 +76,4 @@ function renderResult(item) {
 };
 
 
-$(watchSubmit);
+$(watchSubmit(), getUserLocation());
