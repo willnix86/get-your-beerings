@@ -6,7 +6,9 @@ function watchSubmit() {
     $('#submit').click(function(e) {
         let search = $('#city').val();
         e.preventDefault();
+        $('.js-results').empty();
         getDataFromAPI(search, getAPIResult);
+        $('#next-page').removeClass('hidden');
         $('#city').val("");
     });
 
