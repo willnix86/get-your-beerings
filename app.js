@@ -1,10 +1,13 @@
 const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
-const DISTANCE_MATRIX_URL = 'https://maps.googleapis.com/maps/api/distancematrix/json'
+const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
+
+
 let currPage = 1;
 let searchTarget = $('#city');
 let search = searchTarget.val();
 
 // Get user location
+
 
 //1 User searches for a city
 function watchSubmit() {
@@ -43,7 +46,7 @@ function getDataFromAPI(search, callback) {
 
     const params = {
         by_city: search,
-        sort: '+name',
+        sort: '+type,+name',
         per_page: 10
     }
 
@@ -56,7 +59,7 @@ function getNextPage(search, callback) {
 
     const params = {
         by_city: search,
-        sort: '+name',
+        sort: '+type,+name',
         page: currPage
     }
 
@@ -71,7 +74,7 @@ function getPrevPage(search, callback) {
 
     const params = {
         by_city: search,
-        sort: '+name',
+        sort: '+type,+name',
         page: currPage
     }
 
@@ -80,32 +83,64 @@ function getPrevPage(search, callback) {
 }
 
 
-
 //3 Retrieve single item
 function getAPIResult(data) {
 
     if (data.length < 10) {
         $('#next-page').addClass('hidden');
     } else {
-        for (i = 0; i < data.length; i++) {
+        for (i = 0; i < 1; i++) {
 
             if (data[i].street !== "") {
+                getDistance(data[i]);
                 renderResult(data[i]);
             }
         }
     }
 };
 
-// Retrieve picture for each item
 
-// Retrieve distance to each item
+// Retrieve distance to each brewery
+function getDistance(brewery) {
+
+    const params = {
+
+        locations: [
+            {
+                street: "1015 California Ave",
+                city: "santa monica",
+                county: "los angeles",
+                state: "ca"
+            },
+            {
+                latLng: {
+                    lat: parseFloat(brewery.latitude),
+                    lng: parseFloat(brewery.longitude)
+                }
+            }
+        ]
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: DISTANCE_MATRIX_URL,
+        data: JSON.stringify(params),
+        contentType: "application/json",
+        dataType: 'json',
+    })
+    .done(function (response ) {
+
+        console.log(response.distance[1].toFixed(1));
+
+    });
+
+}
 
 //4 Display item on HTML
-function renderResult(item) {
-    let brewery = item;
+function renderResult(brewery) {
     $('.js-results').append(`
                 <div>
-                <a class='brewery-name' href='${brewery.website_url}' target="_default">${brewery.name}</a>
+                <a class='brewery-name' href='${brewery.website_url}' target="_default">${brewery.name}</a> <p class='brewery-type'>${brewery.brewery_type}</p>
                 <address>
                     ${brewery.street}<br>
                     ${brewery.city}<br>
