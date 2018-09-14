@@ -128,9 +128,9 @@ function getDistance(brewery) {
         contentType: "application/json",
         dataType: 'json',
     })
-    .done(function (response ) {
+    .done(function (response) {
 
-        console.log(response.distance[1].toFixed(1));
+        return response.distance[1].toFixed(1);
 
     });
 
