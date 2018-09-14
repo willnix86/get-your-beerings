@@ -1,5 +1,8 @@
 const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
 const DISTANCE_MATRIX_URL = 'https://maps.googleapis.com/maps/api/distancematrix/json'
+let currPage = 1;
+let searchTarget = $('#city');
+let search = searchTarget.val();
 
 // Get user location
 
@@ -7,12 +10,21 @@ const DISTANCE_MATRIX_URL = 'https://maps.googleapis.com/maps/api/distancematrix
 function watchSubmit() {
 
     $('#submit').click(function(e) {
-        let search = $('#city').val();
         e.preventDefault();
         $('.js-results').empty();
+        searchTarget = $('#city');
+        search = searchTarget.val();
         getDataFromAPI(search, getAPIResult);
         $('#next-page').removeClass('hidden');
         $('#city').val("");
+    });
+
+    $('.js-pagination').on('click', '#next-page', function(e){
+        e.preventDefault();
+        $('.js-results').empty();
+        currPage++;
+        getNextPage(search, getAPIResult);
+        $('#previous-page').removeClass('hidden');
     });
 
 }
@@ -31,7 +43,17 @@ function getDataFromAPI(search, callback) {
 
 
 //2b Get next page
+function getNextPage(search, callback) {
 
+    const params = {
+        by_city: search,
+        sort: '+name',
+        page: currPage
+    }
+
+    $.getJSON(OPEN_BREWERY_URL, params, callback);
+
+}
 
 //2c Get previous page
 
@@ -39,11 +61,15 @@ function getDataFromAPI(search, callback) {
 
 //3 Retrieve single item
 function getAPIResult(data) {
-        
-    for (i = 0; i < data.length; i++) {
 
-        if (data[i].street !== "") {
-            renderResult(data[i]);
+    if (data.length < 10) {
+        $('#next-page').addClass('hidden');
+    } else {
+        for (i = 0; i < data.length; i++) {
+
+            if (data[i].street !== "") {
+                renderResult(data[i]);
+            }
         }
     }
 };
