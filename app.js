@@ -24,7 +24,16 @@ function watchSubmit() {
         $('.js-results').empty();
         currPage++;
         getNextPage(search, getAPIResult);
-        $('#previous-page').removeClass('hidden');
+    });
+
+    $('.js-pagination').on('click', '#prev-page', function(e){
+        e.preventDefault();
+        $('.js-results').empty();
+        currPage--;
+        getPrevPage(search, getAPIResult);
+        if (currPage <= 1) {
+            $('#previous-page').addClass('hidden');
+        };
     });
 
 }
@@ -53,9 +62,22 @@ function getNextPage(search, callback) {
 
     $.getJSON(OPEN_BREWERY_URL, params, callback);
 
+    $('#prev-page').removeClass('hidden');
+
 }
 
 //2c Get previous page
+function getPrevPage(search, callback) {
+
+    const params = {
+        by_city: search,
+        sort: '+name',
+        page: currPage
+    }
+
+    $.getJSON(OPEN_BREWERY_URL, params, callback);
+
+}
 
 
 
