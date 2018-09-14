@@ -17,7 +17,7 @@
 
     <main role="main">
 
-        <form role="form">
+        <form name='brewery-search'>
             <fieldset>
               <legend>Find breweries</legend>
     
@@ -30,9 +30,9 @@
           </form>
     
           <h2>Results</h2>
-          <div class="js-results">
+          <div class="js-results" aria-live="assertive" hidden>
           </div>
-          <div class="js-pagination">
+          <div class="js-pagination" hidden>
             <label for="prev-page"><button id="prev-page" class="hidden">Previous Page</button></label>
             <label for="next-page"><button id="next-page" class="hidden">Next Page</button></label>
           </div>

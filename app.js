@@ -1,3 +1,5 @@
+'use strict';
+
 const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
 const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
 
@@ -14,10 +16,11 @@ function watchSubmit() {
 
     $('#submit').click(function(e) {
         e.preventDefault();
-        $('.js-results').empty();
+        resetResults();
         searchTarget = $('#city');
         search = searchTarget.val();
         getDataFromAPI(search, getAPIResult);
+        $('.js-pagination').prop('hidden', false);
         $('#next-page').removeClass('hidden');
         $('#city').val("");
     });
@@ -39,6 +42,13 @@ function watchSubmit() {
         };
     });
 
+}
+
+// Reset results window
+function resetResults() {
+    $('.js-results').empty();
+    $('#next-page').addClass('hidden');
+    $('.js-pagination').prop('hidden', true);
 }
 
 //2 Send and receive data from API
@@ -89,7 +99,7 @@ function getAPIResult(data) {
     if (data.length < 10) {
         $('#next-page').addClass('hidden');
     } else {
-        for (i = 0; i < 1; i++) {
+        for (let i = 0; i < 1; i++) {
 
             if (data[i].street !== "") {
                 getDistance(data[i]);
@@ -130,7 +140,7 @@ function getDistance(brewery) {
     })
     .done(function (response) {
 
-        return response.distance[1].toFixed(1);
+        console.log(response.distance[1].toFixed(1));
 
     });
 
@@ -138,6 +148,7 @@ function getDistance(brewery) {
 
 //4 Display item on HTML
 function renderResult(brewery) {
+    $('.js-results').prop('hidden', false);
     $('.js-results').append(`
                 <div>
                 <a class='brewery-name' href='${brewery.website_url}' target="_default">${brewery.name}</a> <p class='brewery-type'>${brewery.brewery_type}</p>
