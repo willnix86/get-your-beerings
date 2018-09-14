@@ -1,20 +1,9 @@
 const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
-let userLocation;
+const DISTANCE_MATRIX_URL = 'https://maps.googleapis.com/maps/api/distancematrix/json'
 
-//Get user location
-function getUserLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            let pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            return userLocation = pos;
-        });
-    }
-}
+// Get user location
 
-//User searches for a city
+//1 User searches for a city
 function watchSubmit() {
 
     $('#submit').click(function(e) {
@@ -59,6 +48,10 @@ function getAPIResult(data) {
     }
 };
 
+// Retrieve picture for each item
+
+// Retrieve distance to each item
+
 //4 Display item on HTML
 function renderResult(item) {
     let brewery = item;
@@ -75,5 +68,4 @@ function renderResult(item) {
             `);
 };
 
-
-$(watchSubmit(), getUserLocation());
+$(watchSubmit());
