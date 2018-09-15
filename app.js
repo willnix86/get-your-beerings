@@ -2,14 +2,15 @@
 
 const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
 const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
+const GOOGLE_PLACES_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
 
 
 let currPage = 1;
 let searchTarget = $('#city');
 let search = searchTarget.val();
+let searchResults = [];
 
 // Get user location
-
 
 //1 User searches for a city
 function watchSubmit() {
@@ -21,7 +22,7 @@ function watchSubmit() {
         search = searchTarget.val();
         getDataFromAPI(search, getAPIResult);
         $('.js-pagination').prop('hidden', false);
-        $('#next-page').removeClass('hidden');
+        $('#next-page').prop('hidden', false);
         $('#city').val("");
     });
 
@@ -38,7 +39,7 @@ function watchSubmit() {
         currPage--;
         getPrevPage(search, getAPIResult);
         if (currPage <= 1) {
-            $('#previous-page').addClass('hidden');
+            $('#previous-page').prop('hidden', true);
         };
     });
 
@@ -47,7 +48,7 @@ function watchSubmit() {
 // Reset results window
 function resetResults() {
     $('.js-results').empty();
-    $('#next-page').addClass('hidden');
+    $('#next-page').prop('hidden'), true;
     $('.js-pagination').prop('hidden', true);
 }
 
@@ -63,7 +64,6 @@ function getDataFromAPI(search, callback) {
     $.getJSON(OPEN_BREWERY_URL, params, callback);
 }
 
-
 //2b Get next page
 function getNextPage(search, callback) {
 
@@ -75,7 +75,7 @@ function getNextPage(search, callback) {
 
     $.getJSON(OPEN_BREWERY_URL, params, callback);
 
-    $('#prev-page').removeClass('hidden');
+    $('#prev-page').prop('hidden', false);
 
 }
 
@@ -92,7 +92,6 @@ function getPrevPage(search, callback) {
 
 }
 
-
 //3 Retrieve single item
 function getAPIResult(data) {
 
@@ -102,16 +101,43 @@ function getAPIResult(data) {
         for (let i = 0; i < 1; i++) {
 
             if (data[i].street !== "") {
-                getDistance(data[i]);
-                renderResult(data[i]);
+                //getBreweryImage(data[i]);
+                //searchResults.push(data[i]);
+                renderResult(i, data[i]);
+                getDistance(i, data[i]);
             }
         }
     }
 };
 
+// Retrieve image for each brewery
+function getBreweryImage(brewery) {
+
+    const params = {
+        key: 'AIzaSyCGLEbsRXNBkQjirepn-IXajrTS5vdR6cM',
+        location: search,
+        name: brewery.name,
+        inputtype: 'textquery',
+        rankedby: 'prominence'
+    }
+    
+    $.ajax({
+        type: 'GET',
+        url: GOOGLE_PLACES_URL,
+        data: params,
+        contentType: "application/json",
+        dataType: 'json',
+        jsonp: false,
+        crossDomain: true
+    })
+    .done(function (response) {
+        console.log(response);
+    });
+    
+}
 
 // Retrieve distance to each brewery
-function getDistance(brewery) {
+function getDistance(number, brewery) {
 
     const params = {
 
@@ -140,18 +166,21 @@ function getDistance(brewery) {
     })
     .done(function (response) {
 
-        console.log(response.distance[1].toFixed(1));
+        $('#result-' + number).find('span.js-distance').text( response.distance[1].toFixed(1) + " mi");
 
     });
 
 }
 
+// CREATE A WAY FOR SCREENREADER TO KNOW HOW MANY RESULTS THERE ARE!
+
 //4 Display item on HTML
-function renderResult(brewery) {
+function renderResult(number, brewery) {
     $('.js-results').prop('hidden', false);
     $('.js-results').append(`
-                <div>
-                <a class='brewery-name' href='${brewery.website_url}' target="_default">${brewery.name}</a> <p class='brewery-type'>${brewery.brewery_type}</p>
+                <div id='result-${number}'>
+                <a class='brewery-name' href='${brewery.website_url}' target="_default">${brewery.name}</a> <span class='js-distance'></span>
+                <p class='brewery-type'>${brewery.brewery_type}</p>
                 <address>
                     ${brewery.street}<br>
                     ${brewery.city}<br>
