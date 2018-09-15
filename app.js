@@ -165,10 +165,17 @@ function getDistance(number, brewery) {
         dataType: 'json',
     })
     .done(function (response) {
+        console.log(response.distance);
+
+        if (response.distance) {
 
         $('#result-' + number).find('span.js-distance').text( response.distance[1].toFixed(1) + " mi");
 
-    });
+        } else {
+            $('#result-' + number).find('span.js-distance').text(' ');
+        }
+
+    })
 
 }
 
