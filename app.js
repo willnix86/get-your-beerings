@@ -9,11 +9,24 @@ let currPage = 1;
 let searchTarget = $('#city');
 let search = searchTarget.val();
 let numResults = 0;
+let userCoords;
 
 // Get user location
+function getUserLocation() {
+if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+        return userCoords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        }
+    })
+} else {
+    alert('Geolocation unavailable')
+}
+}
 
-//1 User searches for a city
-function watchSubmit() {
+// User searches for a city
+function watchClicks() {
 
     $('#submit').click(function(e) {
         e.preventDefault();
@@ -23,7 +36,6 @@ function watchSubmit() {
         getDataFromAPI(search, getAPIResult);
         $('.js-results').prop('hidden', false);
         $('#city').val("");
-        $('#next-page').prop('hidden', false);
     });
 
     $('.js-pagination').on('click', '#next-page', function(e){
@@ -48,8 +60,8 @@ function watchSubmit() {
 // Reset results window
 function resetResults() {
     $('.js-results').empty();
-    $('#next-page').prop('hidden'), true;
-    $('.js-pagination').prop('hidden', true);
+    $('#next-page').prop('hidden', true);
+    $('#prev-page').prop('hidden', true);
 }
 
 function displayError(err) {
@@ -62,7 +74,7 @@ function formatQueryParams(params) {
     return queryItems.join('&');
   }
 
-//2 Send and receive data from API
+// Send and receive data from API
 function getDataFromAPI(search, callback) {
 
     const params = {
@@ -72,9 +84,11 @@ function getDataFromAPI(search, callback) {
     }
 
     $.getJSON(OPEN_BREWERY_URL, params, callback);
+
+    $('#next-page').prop('hidden', false);
 }
 
-//2b Get next page
+// Get next page
 function getNextPage(search, callback) {
 
     const params = {
@@ -89,7 +103,7 @@ function getNextPage(search, callback) {
 
 }
 
-//2c Get previous page
+// Get previous page
 function getPrevPage(search, callback) {
 
     const params = {
@@ -102,22 +116,22 @@ function getPrevPage(search, callback) {
 
 }
 
-//3 Retrieve single item
-function getAPIResult(data) {
+// Retrieve single item
+function getAPIResult(data, userCoords) {
 
     if (data.length < 10) {
-        $('#next-page').addClass('hidden');
+        $('#next-page').prop('hidden', true);
     } else {
         for (let i = 0; i < data.length; i++) {
             numResults++;
             if (data[i].street !== "") {
                 getBreweryID(i, data[i]);
-                getDistance(i, data[i]);
+                getDistance(i, data[i], userCoords);
                 renderResult(i, data[i]);
             }
         }
 
-        $('.totalResults').text('Total number of results: ' + numResults);
+        $('.totalResults').text('Total results shown: ' + numResults);
         
     }
 };
@@ -174,15 +188,14 @@ function renderImage(number, images) {
 
 // Retrieve distance to each brewery
 function getDistance(number, brewery) {
-
     const params = {
 
         locations: [
             {
-                street: "1015 California Ave",
-                city: "santa monica",
-                county: "los angeles",
-                state: "ca"
+                latLng: {
+                    lat: parseFloat(userCoords.lat),
+                    lng: parseFloat(userCoords.lng)
+                }
             },
             {
                 latLng: {
@@ -201,7 +214,6 @@ function getDistance(number, brewery) {
         dataType: 'json',
     })
     .done(function (response) {
-        console.log(response.distance);
 
         if (response.distance) {
 
@@ -215,9 +227,7 @@ function getDistance(number, brewery) {
 
 }
 
-// CREATE A WAY FOR SCREENREADER TO KNOW HOW MANY RESULTS THERE ARE!
-
-//4 Display item on HTML
+// Display item on HTML
 function renderResult(number, brewery) {
     $('.js-results').append(`
                 <div id='result-${number}'>
@@ -234,4 +244,4 @@ function renderResult(number, brewery) {
             `);
 };
 
-$(watchSubmit());
+$(watchClicks(), getUserLocation());
