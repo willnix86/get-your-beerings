@@ -231,7 +231,7 @@ function renderResults(results) {
             ${results[i].state}<br>
             ${results[i].postal_code}<br>
         </address>
-
+            
         </div>
     `);
     }
