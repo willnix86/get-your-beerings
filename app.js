@@ -2,13 +2,13 @@
 
 const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
 const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
-const GOOGLE_PLACES_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json';
+const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
 
 
 let currPage = 1;
 let searchTarget = $('#city');
 let search = searchTarget.val();
-let searchResults = [];
+let numResults = 0;
 
 // Get user location
 
@@ -21,9 +21,9 @@ function watchSubmit() {
         searchTarget = $('#city');
         search = searchTarget.val();
         getDataFromAPI(search, getAPIResult);
-        $('.js-pagination').prop('hidden', false);
-        $('#next-page').prop('hidden', false);
+        $('.js-results').prop('hidden', false);
         $('#city').val("");
+        $('#next-page').prop('hidden', false);
     });
 
     $('.js-pagination').on('click', '#next-page', function(e){
@@ -51,6 +51,16 @@ function resetResults() {
     $('#next-page').prop('hidden'), true;
     $('.js-pagination').prop('hidden', true);
 }
+
+function displayError(err) {
+    $('.js-error').append(`<p>Sorry, this search encountered the following error: ${err}</p>`)
+}
+
+function formatQueryParams(params) {
+    const queryItems = Object.keys(params)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+    return queryItems.join('&');
+  }
 
 //2 Send and receive data from API
 function getDataFromAPI(search, callback) {
@@ -98,43 +108,69 @@ function getAPIResult(data) {
     if (data.length < 10) {
         $('#next-page').addClass('hidden');
     } else {
-        for (let i = 0; i < 1; i++) {
-
+        for (let i = 0; i < data.length; i++) {
+            numResults++;
             if (data[i].street !== "") {
-                //getBreweryImage(data[i]);
-                //searchResults.push(data[i]);
-                renderResult(i, data[i]);
+                getBreweryID(i, data[i]);
                 getDistance(i, data[i]);
+                renderResult(i, data[i]);
             }
         }
+
+        $('.totalResults').text('Total number of results: ' + numResults);
+        
     }
 };
 
 // Retrieve image for each brewery
-function getBreweryImage(brewery) {
+function getBreweryID(number, brewery) {
+    
+    const params = {
+        client_id: 'UDLXPN3F3FDLXPIWUAI40YXL40CETQXRDZAVDRPYFLFTJHL4',
+        client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
+        v: 20180323,
+        near: search,
+        query: brewery.name,
+        limit: 1
+    }
+
+    const queryString = formatQueryParams(params);
+    const url = FOURSQUARE_VENUE_URL + '?' + queryString;
+    
+    fetch(url, params)
+    .then(response =>response.json())
+    .then(responseJson => getBreweryImage(number, responseJson.response.venues[0].id))
+    .catch(error => displayError(error))
+}
+
+function getBreweryImage(number, breweryID) {
+
+    const FOURSQUARE_PHOTOS_URL = `https://api.foursquare.com/v2/venues/${breweryID}/photos`;
 
     const params = {
-        key: 'AIzaSyCGLEbsRXNBkQjirepn-IXajrTS5vdR6cM',
-        location: search,
-        name: brewery.name,
-        inputtype: 'textquery',
-        rankedby: 'prominence'
+        client_id: 'UDLXPN3F3FDLXPIWUAI40YXL40CETQXRDZAVDRPYFLFTJHL4',
+        client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
+        v: 20180323,
+        group: 'venue',
+        limit: 3
     }
+
+    const queryString = formatQueryParams(params);
+    const url = FOURSQUARE_PHOTOS_URL + '?' + queryString;
     
-    $.ajax({
-        type: 'GET',
-        url: GOOGLE_PLACES_URL,
-        data: params,
-        contentType: "application/json",
-        dataType: 'json',
-        jsonp: false,
-        crossDomain: true
-    })
-    .done(function (response) {
-        console.log(response);
-    });
-    
-}
+    fetch(url, params)
+    .then(response =>response.json())
+    .then(responseJson => renderImage(number, responseJson.response.photos.items))
+    .catch(error => displayError(error))
+    }
+
+function renderImage(number, images) {
+    for (let i=0; i < images.length; i++) {
+        $('#result-' + number).find('div.images-container').append(`
+        <div><img src=${images[i].prefix}200x200${images[i].suffix} alt='brewery picture'></div>
+        `);
+    }
+    }
 
 // Retrieve distance to each brewery
 function getDistance(number, brewery) {
@@ -183,7 +219,6 @@ function getDistance(number, brewery) {
 
 //4 Display item on HTML
 function renderResult(number, brewery) {
-    $('.js-results').prop('hidden', false);
     $('.js-results').append(`
                 <div id='result-${number}'>
                 <a class='brewery-name' href='${brewery.website_url}' target="_default">${brewery.name}</a> <span class='js-distance'></span>
@@ -194,6 +229,7 @@ function renderResult(number, brewery) {
                     ${brewery.state}<br>
                     ${brewery.postal_code}<br>
                 </address>
+                <div class='images-container'></div>
                 </div>
             `);
 };
