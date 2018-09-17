@@ -42,19 +42,24 @@ function watchClicks() {
         e.preventDefault();
         $('.js-results').empty();
         currPage++;
-        getNextPageOfResults(search);
+        getNextPageOfResults(search, addDistanceAndImages);
+        $('#see-results').prop('hidden', false);
     });
 
     $('.js-pagination').on('click', '#prev-page', function(e){
         e.preventDefault();
         $('.js-results').empty();
         currPage--;
-        getPrevPageOfResults(search);
+        getPrevPageOfResults(search, addDistanceAndImages);
         if (currPage <= 1) {
             $('#previous-page').prop('hidden', true);
         };
-
+        $('#see-results').prop('hidden', false);
     });
+
+    $('.js-results').on('change', '.sort-target', function(e) {
+        alert('The sort option changed');
+    })
 
 }
 
@@ -78,7 +83,7 @@ function getBreweries(search, callback) {
 
     const params = {
         by_city: search,
-        sort: '+type,+name',
+        sort: '+name',
         per_page: 10
     }
 
@@ -86,17 +91,16 @@ function getBreweries(search, callback) {
 
 }
 
-function getNextPageOfResults(search) {
+function getNextPageOfResults(search, callback) {
 
     const params = {
         by_city: search,
-        sort: '+type,+name',
+        sort: '+name',
+        per_page: 10,
         page: currPage
     }
 
-    $.getJSON(OPEN_BREWERY_URL, params, function(results) {
-        return breweries = results;
-    });
+    $.getJSON(OPEN_BREWERY_URL, params, callback);
 
     $('#prev-page').prop('hidden', false);
 
@@ -106,13 +110,12 @@ function getPrevPageOfResults(search, callback) {
 
     const params = {
         by_city: search,
-        sort: '+type,+name',
+        sort: '+name',
+        per_page: 10,
         page: currPage
     }
 
-    $.getJSON(OPEN_BREWERY_URL, params, function(results) {
-        return breweries = results;
-    });
+    $.getJSON(OPEN_BREWERY_URL, params, callback);
 
 }
 
@@ -211,31 +214,59 @@ function addDistanceAndImages(results) {
     breweriesArr = results;
 
     for (let i = 0; i < breweriesArr.length; i++) {
-        getBreweryID(i, breweriesArr[i]);
-        getDistanceToBrewery(i, breweriesArr[i]);
+
+            getBreweryID(i, breweriesArr[i]);
+            getDistanceToBrewery(i, breweriesArr[i]);
+
     }
+
     return breweriesArr;
 }
 
 function renderResults(results) {
-    
-    for (let i = 0; i < results.length; i++)
-    {
-        $('.js-results').append(`
-        <div id='${results[i].distance}'>
-        <a class='brewery-name' href='${results[i].website_url}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>mi
-        <p class='brewery-type'>${results[i].brewery_type}</p>
-        <address>
-            ${results[i].street}<br>
-            ${results[i].city}<br>
-            ${results[i].state}<br>
-            ${results[i].postal_code}<br>
-        </address>
-            
-        </div>
+
+    $('.js-results').append(`
+    <form name='sort-results'>
+        <fieldset>
+            <legend>Sort results</legend>
+            <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='distance' checked>By Name</label>
+            <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='distance'>By Distance</label>
+        </fieldset>
+    </form>
     `);
+    
+    for (let i = 0; i < results.length; i++) {
+
+        if (results[i].brewery_type !== 'planning') {
+
+            $('.js-results').append(`
+            <div id='${results[i].distance}'>
+                <a class='brewery-name' href='${results[i].website_url}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>mi
+                <address>
+                    ${results[i].street}<br>
+                    ${results[i].city}<br>
+                    ${results[i].state}<br>
+                    ${results[i].postal_code}<br>
+                </address>
+            </div>
+        `);
+
+        }
+
     }
+
+    $('#see-results').prop('hidden', true);
+    return breweriesArr = [];
 
 };
 
 $(watchClicks(), getUserLocation());
+
+/*
+
+            <div class='brewery-images>
+                <img src=${results.images[0].prefix}200x200${results.images[0].suffix} alt='brewery picture'>
+                <img src=${results.images[1].prefix}200x200${results.images[1].suffix} alt='brewery picture'>
+            </div>
+
+*/
