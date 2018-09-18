@@ -17,7 +17,7 @@ function getUserLocation() {
             }
         }, function() {
             $('.js-alert').prop('hidden', false);
-            $('.js-alert').append('<p>Geolocation is currently unavailable. You can still search for breweries, but we\'re unable to tell you how close they are.</p>');
+            $('.js-alert').append('<p>Geolocation is currently unavailable. You can still search for breweries, but we can\'t tell you how close they are.</p>');
         });
     }
     setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
