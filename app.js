@@ -8,15 +8,17 @@ let userCoords;
 let breweriesArr = [];
 
 function getUserLocation() {
+    
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
             userCoords = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             }
-        })
-    } else {
-        $('.js-alert').append("<p>Geolocation is currently unavailable.</p>");
+        }, function() {
+            $('.js-alert').prop('hidden', false);
+            $('.js-alert').append('<p>Geolocation is currently unavailable. You can still search for breweries, but we\'re unable to tell you how close they are.</p>');
+        });
     }
     setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
 }
@@ -63,9 +65,9 @@ function watchClicks() {
         }
     });
 
-    $('main').on('change', '.sort-target', function(e){
+  /*  $('main').on('change', '.sort-target', function(e){
         alert('changed');
-    });
+    }); */
 
 }
 
@@ -76,10 +78,8 @@ function resetResults() {
 }
 
 function displayError(err) {
-    if (err !== '') {
     $('.js-alert').prop('hidden', false);
-    $('.js-alert').append(`<p>Sorry, this search encountered the following error: ${err}</p>`)
-    }
+    $('.js-alert').append(`<p>Sorry, we encountered the following error: ${err}</p>`)
 }
 
 function formatQueryParams(params) {
