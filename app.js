@@ -27,15 +27,18 @@ function watchClicks() {
         searchTarget = $('#city');
         search = searchTarget.val();
         getBreweries(search, addDistanceAndImages);
-        $('.js-results').prop('hidden', false);
         $('#see-results').prop('hidden', false);
+        $('.js-results').prop('hidden', false);
         $('#city').val("");
     });
 
     $('.js-pagination').on('click', '#see-results', function(e){
         e.preventDefault();
-        renderResults(breweriesArr);
         $('#next-page').prop('hidden', false);
+        if (currPage > 1) {
+            $('#prev-page').prop('hidden', false);
+        }
+        renderResults(breweriesArr);
     });
 
     $('.js-pagination').on('click', '#next-page', function(e){
@@ -43,6 +46,8 @@ function watchClicks() {
         $('.js-results').empty();
         currPage++;
         getNextPageOfResults(search, addDistanceAndImages);
+        $('#next-page').prop('hidden', true);
+        $('#prev-page').prop('hidden', true);
         $('#see-results').prop('hidden', false);
     });
 
@@ -53,8 +58,9 @@ function watchClicks() {
         getPrevPageOfResults(search, addDistanceAndImages);
         if (currPage <= 1) {
             $('#previous-page').prop('hidden', true);
-        };
-        $('#see-results').prop('hidden', false);
+        } else {
+            $('#see-results').prop('hidden', false);
+        }
     });
 
     $('main').on('change', '.sort-target', function(e){
@@ -101,8 +107,6 @@ function getNextPageOfResults(search, callback) {
     }
 
     $.getJSON(OPEN_BREWERY_URL, params, callback);
-
-    $('#prev-page').prop('hidden', false);
 
 }
 
@@ -237,6 +241,9 @@ function addDistanceAndImages(results) {
 
 function renderResults(results) {
 
+    $('#see-results').prop('hidden', true);
+    $('#next-page').prop('hidden', false);
+
   /*  $(`
     <form name='sort-results'>
         <fieldset>
@@ -271,8 +278,7 @@ function renderResults(results) {
 
     }
 
-    $('#see-results').prop('hidden', true);
-    //return breweriesArr = [];
+    return breweriesArr = [];
 
 };
 
