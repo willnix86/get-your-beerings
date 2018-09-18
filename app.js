@@ -7,16 +7,16 @@ let userCoords;
 let breweriesArr = [];
 
 function getUserLocation() {
-if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-        return userCoords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-        }
-    })
-} else {
-    alert('Geolocation unavailable')
-}
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            return userCoords = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            }
+        })
+    } else {
+        $('.js-alert').append("<p>Geolocation is currently unavailable.</p>");
+    }
 }
 
 function watchClicks() {
@@ -57,9 +57,9 @@ function watchClicks() {
         $('#see-results').prop('hidden', false);
     });
 
-    $('.js-results').on('change', '.sort-target', function(e) {
-        alert('The sort option changed');
-    })
+    $('main').on('change', '.sort-target', function(e){
+        alert('changed');
+    });
 
 }
 
@@ -87,8 +87,20 @@ function getBreweries(search, callback) {
         per_page: 10
     }
 
-    $.getJSON(OPEN_BREWERY_URL, params, callback);
+    const queryString = formatQueryParams(params);
+    const url = OPEN_BREWERY_URL + '?' + queryString;
 
+    fetch(url)
+        .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error(response.statusText);
+        })
+        .then(responseJson => callback(responseJson))
+        .catch(error => {
+            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
+        });
 }
 
 function getNextPageOfResults(search, callback) {
@@ -100,7 +112,20 @@ function getNextPageOfResults(search, callback) {
         page: currPage
     }
 
-    $.getJSON(OPEN_BREWERY_URL, params, callback);
+    const queryString = formatQueryParams(params);
+    const url = OPEN_BREWERY_URL + '?' + queryString;
+
+    fetch(url)
+        .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error(response.statusText);
+        })
+        .then(responseJson => callback(responseJson))
+        .catch(error => {
+            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
+        });
 
     $('#prev-page').prop('hidden', false);
 
@@ -115,7 +140,20 @@ function getPrevPageOfResults(search, callback) {
         page: currPage
     }
 
-    $.getJSON(OPEN_BREWERY_URL, params, callback);
+    const queryString = formatQueryParams(params);
+    const url = OPEN_BREWERY_URL + '?' + queryString;
+
+    fetch(url)
+        .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error(response.statusText);
+        })
+        .then(responseJson => callback(responseJson))
+        .catch(error => {
+            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
+        });;
 
 }
 
@@ -134,10 +172,18 @@ function getBreweryID(index, brewery) {
     const queryString = formatQueryParams(params);
     const url = FOURSQUARE_VENUE_URL + '?' + queryString;
     
-    fetch(url, params)
-    .then(response =>response.json())
-    .then(responseJson => getBreweryImages(index, responseJson.response.venues[0].id))
-    .catch(error => displayError(error))
+    fetch(url)
+        .then(response => {
+            if (response.ok) {
+            response.json();
+            } 
+            throw new Error(response.statusText);
+        })
+        .then(responseJson => getBreweryImages(index, responseJson.response.venues[0].id))
+        .catch(error => {
+            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
+         });
+
 }
 
 function getBreweryImages(index, breweryID) {
@@ -155,10 +201,17 @@ function getBreweryImages(index, breweryID) {
     const queryString = formatQueryParams(params);
     const url = FOURSQUARE_PHOTOS_URL + '?' + queryString;
     
-    fetch(url, params)
-    .then(response =>response.json())
-    .then(responseJson => addImagesToBrewery(index, responseJson.response.photos.items))
-    .catch(error => displayError(error))
+    fetch(url)
+        .then(response => {
+           if (response.ok) {
+            response.json();
+           } 
+           throw new Error(response.statusText);
+        })
+        .then(responseJson => addImagesToBrewery(index, responseJson.response.photos.items))
+        .catch(error => {
+            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
+         });
     }
 
 function addImagesToBrewery(index, images) {
@@ -196,9 +249,9 @@ function getDistanceToBrewery(index, brewery) {
     })
     .done(function (response) {
 
-        if (response.distance) {
+        if (response.distance && response.distance != 'undefined') {
 
-            return breweriesArr[index].distance = response.distance[1].toFixed(1);
+            return breweriesArr[index].distance = `${response.distance[1].toFixed(1)} mi`;
 
         } else {
 
@@ -225,7 +278,7 @@ function addDistanceAndImages(results) {
 
 function renderResults(results) {
 
-    $('.js-results').append(`
+  /*  $(`
     <form name='sort-results'>
         <fieldset>
             <legend>Sort results</legend>
@@ -233,7 +286,7 @@ function renderResults(results) {
             <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='distance'>By Distance</label>
         </fieldset>
     </form>
-    `);
+    `).insertBefore('.js-results'); */
     
     for (let i = 0; i < results.length; i++) {
 
@@ -241,7 +294,7 @@ function renderResults(results) {
 
             $('.js-results').append(`
             <div id='${results[i].distance}'>
-                <a class='brewery-name' href='${results[i].website_url}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>mi
+                <a class='brewery-name' href='${results[i].website_url}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
                 <address>
                     ${results[i].street}<br>
                     ${results[i].city}<br>
