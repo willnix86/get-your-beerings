@@ -87,20 +87,8 @@ function getBreweries(search, callback) {
         per_page: 10
     }
 
-    const queryString = formatQueryParams(params);
-    const url = OPEN_BREWERY_URL + '?' + queryString;
+    $.getJSON(OPEN_BREWERY_URL, params, callback);
 
-    fetch(url)
-        .then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error(response.statusText);
-        })
-        .then(responseJson => callback(responseJson))
-        .catch(error => {
-            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
-        });
 }
 
 function getNextPageOfResults(search, callback) {
@@ -112,20 +100,7 @@ function getNextPageOfResults(search, callback) {
         page: currPage
     }
 
-    const queryString = formatQueryParams(params);
-    const url = OPEN_BREWERY_URL + '?' + queryString;
-
-    fetch(url)
-        .then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error(response.statusText);
-        })
-        .then(responseJson => callback(responseJson))
-        .catch(error => {
-            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
-        });
+    $.getJSON(OPEN_BREWERY_URL, params, callback);
 
     $('#prev-page').prop('hidden', false);
 
@@ -140,20 +115,7 @@ function getPrevPageOfResults(search, callback) {
         page: currPage
     }
 
-    const queryString = formatQueryParams(params);
-    const url = OPEN_BREWERY_URL + '?' + queryString;
-
-    fetch(url)
-        .then(response => {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error(response.statusText);
-        })
-        .then(responseJson => callback(responseJson))
-        .catch(error => {
-            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
-        });;
+    $.getJSON(OPEN_BREWERY_URL, params, callback);
 
 }
 
@@ -175,14 +137,12 @@ function getBreweryID(index, brewery) {
     fetch(url)
         .then(response => {
             if (response.ok) {
-            response.json();
-            } 
-            throw new Error(response.statusText);
-        })
+                return response.json();
+        }
+        throw new Error(response.statusText);
+    })    
         .then(responseJson => getBreweryImages(index, responseJson.response.venues[0].id))
-        .catch(error => {
-            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
-         });
+        .catch(error => displayError(error))
 
 }
 
@@ -203,15 +163,14 @@ function getBreweryImages(index, breweryID) {
     
     fetch(url)
         .then(response => {
-           if (response.ok) {
-            response.json();
-           } 
-           throw new Error(response.statusText);
-        })
+            if (response.ok) {
+                return response.json();
+        }
+        throw new Error(response.statusText);
+    })
         .then(responseJson => addImagesToBrewery(index, responseJson.response.photos.items))
-        .catch(error => {
-            $('.js-alert').append(`<p>Something went wrong: ${error.message}</p>`);
-         });
+        .catch(error => displayError(error))
+
     }
 
 function addImagesToBrewery(index, images) {
@@ -301,6 +260,10 @@ function renderResults(results) {
                     ${results[i].state}<br>
                     ${results[i].postal_code}<br>
                 </address>
+                <div class='brewery-images>
+                <img src=${results[i].images[0].prefix}200x200${results[i].images[0].suffix} alt='a picture from ${results[i].name} by ${results[i].images[0].user.firstName} ${results[i].images[0].user.lastName}'>
+                <img src=${results[i].images[1].prefix}200x200${results[i].images[1].suffix} alt='a picture from ${results[i].name} by ${results[i].images[1].user.firstName} ${results[i].images[1].user.lastName}'>
+            </div>
             </div>
         `);
 
@@ -309,7 +272,7 @@ function renderResults(results) {
     }
 
     $('#see-results').prop('hidden', true);
-    return breweriesArr = [];
+    //return breweriesArr = [];
 
 };
 
@@ -317,9 +280,6 @@ $(watchClicks(), getUserLocation());
 
 /*
 
-            <div class='brewery-images>
-                <img src=${results.images[0].prefix}200x200${results.images[0].suffix} alt='brewery picture'>
-                <img src=${results.images[1].prefix}200x200${results.images[1].suffix} alt='brewery picture'>
-            </div>
+            
 
 */
