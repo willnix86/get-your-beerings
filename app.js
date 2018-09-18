@@ -277,9 +277,3 @@ function renderResults(results) {
 };
 
 $(watchClicks(), getUserLocation());
-
-/*
-
-            
-
-*/
