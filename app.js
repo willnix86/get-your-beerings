@@ -10,7 +10,7 @@ let breweriesArr = [];
 function getUserLocation() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            return userCoords = {
+            userCoords = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             }
@@ -18,6 +18,7 @@ function getUserLocation() {
     } else {
         $('.js-alert').append("<p>Geolocation is currently unavailable.</p>");
     }
+    setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
 }
 
 function watchClicks() {
