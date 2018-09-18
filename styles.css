@@ -1,3 +1,23 @@
+header {
+    text-align: center;
+    padding-bottom: 45px;
+}
+
+form, section, main {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.js-results {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
 .card {
-    margin-bottom: 15px;
+    margin: 0 10px 15px 10px;
+    max-width: 200px;
+    height: 200px;
+    float: left;
 }

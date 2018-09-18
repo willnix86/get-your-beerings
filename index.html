@@ -5,45 +5,43 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Beer Me! USA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel='stylesheet' type='text/css' href='reset.css' />
+    <!-- <link rel='stylesheet' type='text/css' href='reset.css' /> -->
     <link rel='stylesheet' type='text/css' href='grid.css' />
     <link rel="stylesheet" type="text/css" media="screen" href="styles.css" />
 </head>
 <body>
-
-    <header role="banner">
+    
+    <header role="banner" class='row'>
         <h1>Beer Me!</h1>
         <p>Find breweries, pubs, and beer gardens near you</p>
     </header>
 
-    <form name='brewery-search'>
-        <fieldset>
-            <legend>Enter Location</legend>
+        <form name='brewery-search'>
+            <fieldset>
+                <legend>Enter Location</legend>
 
-            <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
-            
+                <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                
 
-            <label for="submit"><button type="submit" id="submit" name="submit" hidden>Submit</button></label>
+                <label for="submit"><button type="submit" id="submit" name="submit" hidden>Submit</button></label>
 
-        </fieldset>
-    </form>
+            </fieldset>
+        </form>
 
-    <section class='js-alert' role="alert" aria-live='assertive' hidden>
+        <section class='js-alert' role="alert" aria-live='assertive' hidden>
 
-    </section>
-    
-    <main role="main">
-        <h2>Results</h2>
-        <div class="js-results" aria-live="polite" hidden>
-        </div>
-        <nav role='navigation' aria-live="polite" class="js-pagination">
-            <label for='see-results'><button id='see-results' hidden>See Results</button></label>
-            <label for="prev-page"><button id="prev-page" hidden>Previous Page</button></label>
-            <label for="next-page"><button id="next-page" hidden>Next Page</button></label>
-        </nav>
-    </main>
-
-
+        </section>
+        
+        <main role="main">
+            <h2>Results</h2>
+            <div class="js-results row" aria-live="polite" hidden>
+            </div>
+            <nav role='navigation' aria-live="polite" class="js-pagination">
+                <label for='see-results'><button id='see-results' hidden>See Results</button></label>
+                <label for="prev-page"><button id="prev-page" hidden>Previous Page</button></label>
+                <label for="next-page"><button id="next-page" hidden>Next Page</button></label>
+            </nav>
+        </main>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="app.js"></script>

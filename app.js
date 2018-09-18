@@ -1,7 +1,7 @@
 const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
 
 let currIndex = 0;
-let currResults = 10;
+let currResults = 15;
 let searchTarget = $('#city');
 let search = searchTarget.val();
 let userCoords;
@@ -39,7 +39,7 @@ function watchClicks() {
     $('.js-pagination').on('click', '#see-results', function(e){
         e.preventDefault();
         $('#next-page').prop('hidden', false);
-        if (currResults > 10) {
+        if (currResults > 15) {
             $('#prev-page').prop('hidden', false);
         }
         renderResults(breweriesArr);
@@ -48,8 +48,8 @@ function watchClicks() {
     $('.js-pagination').on('click', '#next-page', function(e){
         e.preventDefault();
         $('.js-results').empty();
-        currResults+=10;
-        currIndex+=11;
+        currResults+=15;
+        currIndex+=16;
         $('#prev-page').prop('hidden', false);
         renderResults(breweriesArr);
     });
@@ -57,10 +57,10 @@ function watchClicks() {
     $('.js-pagination').on('click', '#prev-page', function(e){
         e.preventDefault();
         $('.js-results').empty();
-        currResults-=10;
-        currIndex-=11;
+        currResults-=15;
+        currIndex-=16;
        renderResults(breweriesArr);
-        if (currResults <= 10) {
+        if (currResults <= 15) {
             $('#previous-page').prop('hidden', true);
         }
     });
@@ -214,7 +214,7 @@ function renderResults(results) {
         let address = results[i].location.formattedAddress.join('<br>');
 
         $('.js-results').append(`
-            <div id='${results[i].distance}' class='card'>
+            <div id='${results[i].distance}' class='card col-3'>
                 <a class='brewery-name card-title' href='https://www.google.com/search?q=${results[i].name}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
                 <address class='card-body'>
                    ${address}
@@ -222,7 +222,7 @@ function renderResults(results) {
             </div>
         `);
 
-        }
+    }
 
 };
 
