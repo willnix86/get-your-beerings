@@ -1,4 +1,3 @@
-//const OPEN_BREWERY_URL = 'https://api.openbrewerydb.org/breweries';
 const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
 
 let currIndex = 0;
@@ -198,7 +197,6 @@ function addDistanceAndImages(results) {
 
 function renderResults(results) {
 
-    //$('#see-results').prop('hidden', true;
     $('#next-page').prop('hidden', false);
 
   /*  $(`
@@ -216,8 +214,8 @@ function renderResults(results) {
 
         $('.js-results').append(`
             <div id='${results[i].distance}' class='card'>
-                <a class='brewery-name card-title' href='#' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
-                <address class='card-body>
+                <a class='brewery-name card-title' href='https://www.google.com/search?q=${results[i].name}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
+                <address class='card-body'>
                    ${address}
                 </address>
             </div>
@@ -233,10 +231,6 @@ $(watchClicks(), getUserLocation());
 
 <img src=${results[i].details.venue.bestPhoto.prefix}200x200${results[i].details.venue.bestPhoto.suffix} alt='photo of ${results[i].name}><br> 
 
- ${results[i].location.address}<br>
-                    ${results[i].location.city}<br>
-                    ${results[i].location.state}<br>
-                    ${results[i].location.postalCode}<br>
 
 */
 
