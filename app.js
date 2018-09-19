@@ -21,7 +21,7 @@ function getUserLocation() {
             $('.js-alert').append('<p>Geolocation is currently unavailable. You can still search for breweries, but we can\'t tell you how close they are.</p>');
         });
     }
-   // setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
+    setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
 }
 
 function watchClicks() {
@@ -48,7 +48,6 @@ function watchClicks() {
 
     $('.js-pagination').on('click', '#next-page', function(e){
         e.preventDefault();
-        $('.js-results').remove();
         //$('#prev-page').prop('hidden', false);
         renderResults(breweriesArr);
     });
@@ -70,8 +69,12 @@ function watchClicks() {
 }
 
 function resetResults() {
-    $('.js-results').empty();
+    $('.js-results').remove();
     $('#next-page').prop('hidden', true);
+    numberOfRows = 4;
+    numberOfCols = 4;
+    arrayIndex = 0;
+
     //$('#prev-page').prop('hidden', true);
 }
 
@@ -211,7 +214,7 @@ function renderResults(results) {
     let resultsStr;
 
     for (let rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
-        resultsStr = `<div class='row' aria-live='polite'>`
+        resultsStr = `<div class='js-results row' aria-live='polite'>`
 
         for (let columnNumber = 0, i = arrayIndex; columnNumber < numberOfCols; columnNumber++, i++) {
 
@@ -235,28 +238,13 @@ function renderResults(results) {
         if (arrayIndex >= 48) {
             numberOfRows = 1;
             numberOfCols = 2;
+        }
+
+        if (arrayIndex >= 52) {
             $('#next-page').prop('hidden', true);
         }
 
     }
-    
-   //$(resultsStr).insertBefore('.js-pagination');
-  
-// -------------------------- OLD LOOP ---------------------
-
-  /*  for (let i = currIndex; i <= currResults; i++) {
-        let address = results[i].location.formattedAddress.join('<br>');
-
-        $('.js-results').append(`
-            <div id='${results[i].distance}' class='card col-3'>
-                <a class='brewery-name card-title' href='https://www.google.com/search?q=${results[i].name}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
-                <address class='card-body'>
-                   ${address}
-                </address>
-            </div>
-        `);
-
-    } */
 
 };
 
