@@ -220,7 +220,7 @@ function renderResults(results) {
 
             let address = results[i].location.formattedAddress.join('<br>');
             
-            resultsStr += `<div id=${results[i].distance} class='col-3 card'><a class='brewery-name card-title' href='https://www.google.com/search?q=${results[i].name}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
+            resultsStr += `<div id='${results[i].distance}' class='col-3 card'><a class='brewery-name card-title' href='https://www.google.com/search?q=${results[i].name}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
             <address class='card-body'>
                ${address}
             </address>

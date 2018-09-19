@@ -9,15 +9,6 @@ form, section, main {
     text-align: center;
 }
 
-.js-results {
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
-}
-
 .card {
-    margin: 0 10px 15px 10px;
-    max-width: 200px;
-    height: 200px;
-    float: left;
+    margin-bottom: 50px;
 }
