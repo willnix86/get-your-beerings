@@ -1,14 +1,22 @@
 header {
+    width: 100%;
     text-align: center;
     padding-bottom: 45px;
 }
 
-form, section, main {
+form, section, main, navigation {
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
 }
 
+form {
+    margin-bottom: 50px;
+}
+
+
+
 .card {
     margin-bottom: 50px;
 }
+

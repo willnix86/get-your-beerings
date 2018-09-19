@@ -2,51 +2,70 @@ const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
 
 let searchTarget = $('#city');
 let search = searchTarget.val();
-let userCoords;
+let userCoords = {};
 let breweriesArr = [];
 let numberOfRows = 4;
 let numberOfCols = 4;
 let arrayIndex = 0;
 
+// workout arounds:
+    // one big data obj
+    // smaller functions ie 'getCoods'
+    // use const for objs/arrays so it fixes datatype
+
 function getUserLocation() {
+
+    if (Modernizr.geolocation) {}
     
-    if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            userCoords = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            }
+            userCoords.lat = position.coords.latitude;
+            userCoords.lng = position.coords.longitude;
+            $(`
+            <form name='brewery-search'>
+                <fieldset>
+                    <legend>Enter Location</legend>
+
+                    <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                    
+
+                    <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
+
+                </fieldset>
+            </form>
+            `).insertAfter('header');
+
         }, function() {
-            $('.js-alert').prop('hidden', false);
-            $('.js-alert').append('<p>Geolocation is currently unavailable. You can still search for breweries, but we can\'t tell you how close they are.</p>');
+            $(`
+            <form name='brewery-search'>
+                <fieldset>
+                    <legend>Enter Location</legend>
+
+                    <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                    
+
+                    <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
+
+                </fieldset>
+            </form>
+            
+            <section class='js-alert' role="alert" aria-live='assertive'>
+            </section>
+            `).insertAfter('form');
+
+            $('.js-alert').append(`<p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>`);
         });
-    }
 
-    $('#submit').prop('hidden', false);
-
-   // setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
 }
 
 function watchClicks() {
 
-    $('#submit').click(function(e) {
+    $('body').on('click', '#submit', function(e) {
         e.preventDefault();
         resetResults();
         searchTarget = $('#city');
         search = searchTarget.val();
         getBreweries(search, addDistanceAndImages);
-        $('#see-results').prop('hidden', true);
-        $('.js-results').prop('hidden', false);
         $('#city').val("");
-    });
-
-    $('.js-pagination').on('click', '#see-results', function(e){
-        e.preventDefault();
-        $('#next-page').prop('hidden', false);
-        /* if (arrayIndex > 15) {
-            $('#prev-page').prop('hidden', false);
-        } */
-        renderResults(breweriesArr);
     });
 
     $('.js-pagination').on('click', '#next-page', function(e){
@@ -158,7 +177,7 @@ function getDistanceToBrewery(index, brewery) {
         ]
     };
 
-    if (params.locations[0] = 'undefined' || userCoords == 'undefined' || brewery.location == 'undefined') {
+    if (userCoords === undefined) {
 
         breweriesArr[index].distance = ' ';
 
@@ -173,7 +192,7 @@ function getDistanceToBrewery(index, brewery) {
         })
         .done(function (response) {
     
-            if (response.distance && response.distance != 'undefined') {
+            if (response.distance && response.distance != undefined) {
     
                 breweriesArr[index].distance = `${response.distance[1].toFixed(1)} mi`;
     
