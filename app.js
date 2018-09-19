@@ -1,11 +1,12 @@
 const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
 
-let currIndex = 0;
-let currResults = 15;
 let searchTarget = $('#city');
 let search = searchTarget.val();
 let userCoords;
 let breweriesArr = [];
+let numberOfRows = 4;
+let numberOfCols = 4;
+let arrayIndex = 0;
 
 function getUserLocation() {
     
@@ -20,7 +21,7 @@ function getUserLocation() {
             $('.js-alert').append('<p>Geolocation is currently unavailable. You can still search for breweries, but we can\'t tell you how close they are.</p>');
         });
     }
-    setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
+   // setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
 }
 
 function watchClicks() {
@@ -39,31 +40,28 @@ function watchClicks() {
     $('.js-pagination').on('click', '#see-results', function(e){
         e.preventDefault();
         $('#next-page').prop('hidden', false);
-        if (currResults > 15) {
+        /* if (arrayIndex > 15) {
             $('#prev-page').prop('hidden', false);
-        }
+        } */
         renderResults(breweriesArr);
     });
 
     $('.js-pagination').on('click', '#next-page', function(e){
         e.preventDefault();
-        $('.js-results').empty();
-        currResults+=15;
-        currIndex+=16;
-        $('#prev-page').prop('hidden', false);
+        $('.js-results').remove();
+        //$('#prev-page').prop('hidden', false);
         renderResults(breweriesArr);
     });
 
-    $('.js-pagination').on('click', '#prev-page', function(e){
+  /*  $('.js-pagination').on('click', '#prev-page', function(e){
         e.preventDefault();
-        $('.js-results').empty();
-        currResults-=15;
-        currIndex-=16;
+        $('.js-results').remove();
+        arrayIndex-=16;
        renderResults(breweriesArr);
-        if (currResults <= 15) {
+        if (arrayIndex <= 15) {
             $('#previous-page').prop('hidden', true);
         }
-    });
+    }); */
 
   /*  $('main').on('change', '.sort-target', function(e){
         alert('changed');
@@ -74,7 +72,7 @@ function watchClicks() {
 function resetResults() {
     $('.js-results').empty();
     $('#next-page').prop('hidden', true);
-    $('#prev-page').prop('hidden', true);
+    //$('#prev-page').prop('hidden', true);
 }
 
 function displayError(err) {
@@ -209,8 +207,44 @@ function renderResults(results) {
         </fieldset>
     </form>
     `).insertBefore('.js-results'); */
+
+    let resultsStr;
+
+    for (let rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+        resultsStr = `<div class='row' aria-live='polite'>`
+
+        for (let columnNumber = 0, i = arrayIndex; columnNumber < numberOfCols; columnNumber++, i++) {
+
+            let address = results[i].location.formattedAddress.join('<br>');
+            
+            resultsStr += `<div id=${results[i].distance} class='col-3 card'><a class='brewery-name card-title' href='https://www.google.com/search?q=${results[i].name}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
+            <address class='card-body'>
+               ${address}
+            </address>
+            </div>
+            `;
+
+        }
+
+        resultsStr += `</div>`;
+
+        $(resultsStr).insertBefore('.js-pagination');
+        
+        arrayIndex += 4;
+
+        if (arrayIndex >= 48) {
+            numberOfRows = 1;
+            numberOfCols = 2;
+            $('#next-page').prop('hidden', true);
+        }
+
+    }
     
-    for (let i = currIndex; i <= currResults; i++) {
+   //$(resultsStr).insertBefore('.js-pagination');
+  
+// -------------------------- OLD LOOP ---------------------
+
+  /*  for (let i = currIndex; i <= currResults; i++) {
         let address = results[i].location.formattedAddress.join('<br>');
 
         $('.js-results').append(`
@@ -222,7 +256,7 @@ function renderResults(results) {
             </div>
         `);
 
-    }
+    } */
 
 };
 
