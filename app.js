@@ -15,7 +15,7 @@ let arrayIndex = 0;
 
 function getUserLocation() {
 
-    if (Modernizr.geolocation) {}
+    if ("geolocation" in navigator) {
     
         navigator.geolocation.getCurrentPosition(function(position) {
             userCoords.lat = position.coords.latitude;
@@ -54,6 +54,27 @@ function getUserLocation() {
 
             $('.js-alert').append(`<p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>`);
         });
+
+    } else {
+        $(`
+            <form name='brewery-search'>
+                <fieldset>
+                    <legend>Enter Location</legend>
+
+                    <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                    
+
+                    <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
+
+                </fieldset>
+            </form>
+            
+            <section class='js-alert' role="alert" aria-live='assertive'>
+            </section>
+            `).insertAfter('form');
+
+            $('.js-alert').append(`<p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>`);
+    }
 
 }
 
