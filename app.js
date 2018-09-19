@@ -21,7 +21,10 @@ function getUserLocation() {
             $('.js-alert').append('<p>Geolocation is currently unavailable. You can still search for breweries, but we can\'t tell you how close they are.</p>');
         });
     }
-    setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
+
+    $('#submit').prop('hidden', false);
+
+   // setTimeout(function() {$('#submit').prop('hidden', false)}, 2000);
 }
 
 function watchClicks() {
@@ -155,31 +158,39 @@ function getDistanceToBrewery(index, brewery) {
         ]
     };
 
-    $.ajax({
-        type: 'POST',
-        url: DISTANCE_MATRIX_URL,
-        data: JSON.stringify(params),
-        contentType: "application/json",
-        dataType: 'json',
-    })
-    .done(function (response) {
+    if (params.locations[0] = 'undefined' || userCoords == 'undefined' || brewery.location == 'undefined') {
 
-        if (response.distance && response.distance != 'undefined') {
+        breweriesArr[index].distance = ' ';
 
-            breweriesArr[index].distance = `${response.distance[1].toFixed(1)} mi`;
+    } else {
 
-        } else {
-
-            breweriesArr[index].distance = ' ';
-
-        }
+        $.ajax({
+            type: 'POST',
+            url: DISTANCE_MATRIX_URL,
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            dataType: 'json',
+        })
+        .done(function (response) {
     
-    })
-    .fail(function(response) {
-        response.distance = ' ';
-        breweriesArr[index].distance = response.distance;
+            if (response.distance && response.distance != 'undefined') {
+    
+                breweriesArr[index].distance = `${response.distance[1].toFixed(1)} mi`;
+    
+            } else {
+    
+                breweriesArr[index].distance = ' ';
+    
+            }
+        
+        })
+        .fail(function(response) {
+            response.distance = ' ';
+            breweriesArr[index].distance = response.distance;
+    
+        })
 
-    })
+    }
 
 }
 
