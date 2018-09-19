@@ -34,49 +34,36 @@ function getUserLocation() {
             </form>
             `).insertAfter('header');
 
-        }, function() {
-            $(`
-            <form name='brewery-search'>
-                <fieldset>
-                    <legend>Enter Location</legend>
+        }, function(error) {
 
-                    <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
-                    
+            if (error.message === 'User denied Geolocation') {
+                $(`
+                <form name='brewery-search'>
+                    <fieldset>
+                        <legend>Enter Location</legend>
+    
+                        <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                        
+    
+                        <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
+    
+                    </fieldset>
+                </form>
 
-                    <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
+                <section class='js-alert' role="alert" aria-live='assertive'>
+                    <p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>
+                </section>
+                
+                `).insertAfter('header');
+                
+                };
 
-                </fieldset>
-            </form>
-            
-            <section class='js-alert' role="alert" aria-live='assertive'>
-            </section>
-            `).insertAfter('form');
+            }
 
-            $('.js-alert').append(`<p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>`);
-        });
+        )}
 
-    } else {
-        $(`
-            <form name='brewery-search'>
-                <fieldset>
-                    <legend>Enter Location</legend>
-
-                    <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
-                    
-
-                    <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
-
-                </fieldset>
-            </form>
-            
-            <section class='js-alert' role="alert" aria-live='assertive'>
-            </section>
-            `).insertAfter('form');
-
-            $('.js-alert').append(`<p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>`);
     }
 
-}
 
 function watchClicks() {
 
