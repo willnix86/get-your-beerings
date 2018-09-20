@@ -19,6 +19,12 @@ form {
     margin-bottom: 50px;
 }
 
+#map {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 50px;
+}
+
 .card {
     margin-bottom: 50px;
 }

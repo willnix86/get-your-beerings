@@ -270,7 +270,25 @@ function renderResults(results) {
 
     }
 
+    initMap(breweriesArr);
+
 };
+
+function initMap(locations) {
+
+    let map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: userCoords.lat, lng: userCoords.lng},
+        zoom: 11
+      });
+
+    for (i = 0; i < locations.length; i++) {
+        let pos = {lat: locations[i].location.lat, lng: locations[i].location.lng};
+
+        let marker = new google.maps.Marker({position: pos, map: map});
+    }
+
+}
+
 
 $(watchClicks(), getUserLocation());
 
