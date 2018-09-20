@@ -1,12 +1,11 @@
 const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
 
-let searchTarget = $('#city');
-let search = searchTarget.val();
 let userCoords = {};
 let breweriesArr = [];
+let arrayIndex = 0;
 let numberOfRows = 4;
 let numberOfCols = 4;
-let arrayIndex = 0;
+
 
 // workout arounds:
     // one big data obj
@@ -14,12 +13,26 @@ let arrayIndex = 0;
     // use const for objs/arrays so it fixes datatype
 
 function getUserLocation() {
-
-    if ("geolocation" in navigator) {
     
-        navigator.geolocation.getCurrentPosition(function(position) {
-            userCoords.lat = position.coords.latitude;
-            userCoords.lng = position.coords.longitude;
+    navigator.geolocation.getCurrentPosition(function(position) {
+        userCoords.lat = position.coords.latitude;
+        userCoords.lng = position.coords.longitude;
+        $(`
+        <form name='brewery-search'>
+            <fieldset>
+                <legend>Enter Location</legend>
+
+                <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                
+
+                <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
+
+            </fieldset>
+        </form>
+        `).insertAfter('header');
+
+    }, function() {
+
             $(`
             <form name='brewery-search'>
                 <fieldset>
@@ -32,65 +45,32 @@ function getUserLocation() {
 
                 </fieldset>
             </form>
+
+            <section class='js-alert' role="alert" aria-live='assertive'>
+                <p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>
+            </section>
+
             `).insertAfter('header');
 
-        }, function(error) {
+     }, 
 
-            if (error.message === 'User denied Geolocation') {
-                $(`
-                <form name='brewery-search'>
-                    <fieldset>
-                        <legend>Enter Location</legend>
-    
-                        <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
-                        
-    
-                        <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
-    
-                    </fieldset>
-                </form>
-
-                <section class='js-alert' role="alert" aria-live='assertive'>
-                    <p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>
-                </section>
-                
-                `).insertAfter('header');
-                
-                };
-
-            }
-
-        )}
-
-    }
-
+{timeout:10000})}
 
 function watchClicks() {
 
     $('body').on('click', '#submit', function(e) {
         e.preventDefault();
         resetResults();
-        searchTarget = $('#city');
-        search = searchTarget.val();
+        let searchTarget = $('#city');
+        let search = searchTarget.val();
         getBreweries(search, addDistanceAndImages);
         $('#city').val("");
     });
 
     $('.js-pagination').on('click', '#next-page', function(e){
         e.preventDefault();
-        //$('#prev-page').prop('hidden', false);
         renderResults(breweriesArr);
     });
-
-  /*  $('.js-pagination').on('click', '#prev-page', function(e){
-        e.preventDefault();
-        $('.js-results').remove();
-        arrayIndex-=16;
-       renderResults(breweriesArr);
-        if (arrayIndex <= 15) {
-            $('#previous-page').prop('hidden', true);
-        }
-    }); */
 
   /*  $('main').on('change', '.sort-target', function(e){
         alert('changed');
@@ -100,17 +80,15 @@ function watchClicks() {
 
 function resetResults() {
     $('.js-results').remove();
-    $('#next-page').prop('hidden', true);
-    numberOfRows = 4;
-    numberOfCols = 4;
-    arrayIndex = 0;
-
-    //$('#prev-page').prop('hidden', true);
 }
 
 function displayError(err) {
-    $('.js-alert').prop('hidden', false);
-    $('.js-alert').append(`<p>Sorry, we encountered the following error: ${err}</p>`)
+    $(`
+        <section class='js-alert' role="alert" aria-live='assertive'>
+                <p>Sorry, we encountered the following error(s): ${err}</p>
+        </section>
+    `).insertAfter('form');
+    $('.js-alert').text(`Sorry, we encountered the following error(s): ${err}`);
 }
 
 function formatQueryParams(params) {
@@ -249,19 +227,27 @@ function renderResults(results) {
     </form>
     `).insertBefore('.js-results'); */
 
-    let resultsStr;
+    let resultsStr = '';
 
     for (let rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
-        resultsStr = `<div class='js-results row' aria-live='polite'>`
+
+        resultsStr = `<div class='js-results row' aria-live='polite'>`;
 
         for (let columnNumber = 0, i = arrayIndex; columnNumber < numberOfCols; columnNumber++, i++) {
 
             let address = results[i].location.formattedAddress.join('<br>');
             
-            resultsStr += `<div id='${results[i].distance}' class='col-3 card'><a class='brewery-name card-title' href='https://www.google.com/search?q=${results[i].name}' target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
-            <address class='card-body'>
-               ${address}
-            </address>
+            resultsStr += `
+            <div id='${results[i].distance}' class='col-3 card'>
+            <div class='card-body'>
+                <div>
+                <img class='card-logo' src='images/brewery.png' alt='brewery icon'> 
+                </div>
+                <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
+                <address class='card-text'>
+                    ${address}
+                </address>
+            </div>
             </div>
             `;
 
@@ -289,9 +275,13 @@ function renderResults(results) {
 $(watchClicks(), getUserLocation());
 
 /* 
-
-<img src=${results[i].details.venue.bestPhoto.prefix}200x200${results[i].details.venue.bestPhoto.suffix} alt='photo of ${results[i].name}><br> 
-
+            <img class='card-image' src=${results[i].details.venue.photos.groups[1].items[1].prefix}200x200${results[i].details.venue.photos.groups[1].items[1].suffix} alt='photo of ${results[i].name}"> 
+            <div class='card-status'>${results[i].details.venue.hours.status}</div>
+            <div class='card-footer'>
+                <a class='social-link' href='www.instagram.com/${results[i].details.venue.contact.instagram}><img class='social-img' src='images/insta.png' alt='instagram-link logo for ${results[i].name}'></a>
+                <a class='social-link' href='tel:${results[i].details.venue.contact.phone}><img class='social-img' src='images/phone.png' alt='call ${results[i].name}'></a>
+                <a class='social-link' href='www.twitter.com/${results[i].details.venue.contact.twitter}><img class='social-img' src='images/twitter.png' alt='twitter-link logo for ${results[i].name}'></a>
+            </div>
 
 */
 

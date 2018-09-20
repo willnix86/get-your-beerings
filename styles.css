@@ -4,6 +4,11 @@ header {
     padding-bottom: 45px;
 }
 
+.logo {
+    width: 100px;
+    height: 100px;
+}
+
 form, section, main, navigation {
     max-width: 1200px;
     margin: 0 auto;
@@ -14,9 +19,22 @@ form {
     margin-bottom: 50px;
 }
 
-
-
 .card {
     margin-bottom: 50px;
 }
 
+.card-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+
+footer {
+    width: 100%;
+    text-align: center;
+}
+
+.credits {
+    display: inline-block;
+    font-size: 5px;
+}
