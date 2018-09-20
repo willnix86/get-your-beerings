@@ -63,7 +63,7 @@ function watchClicks() {
         resetResults();
         let searchTarget = $('#city');
         let search = searchTarget.val();
-        getBreweries(search, addDistanceAndImages);
+        getBreweries(search, getDistances);
         $('#city').val("");
     });
 
@@ -72,7 +72,7 @@ function watchClicks() {
         renderResults(breweriesArr);
     });
 
-    $('main').on('click', '#map', 'google.maps.Marker', function(e) {
+    $('#map').on('click', 'google.maps.Marker', function(e) {
         alert('clicked');
     });
 
@@ -108,7 +108,7 @@ function getBreweries(search, callback) {
         client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
         v: 20180323,
         near: search,
-        limit: 50,
+        limit: 5,
         categoryId: '50327c8591d4c4b30a586d5d'
     }
 
@@ -116,40 +116,15 @@ function getBreweries(search, callback) {
 
 }
 
-function getBreweryDetails(index, breweryID) {
+function getDistances(results) {
 
-    const FOURSQUARE_DETAILS_URL = `https://api.foursquare.com/v2/venues/${breweryID}`;
+    breweriesArr = results.response.venues;
 
-    const params = {
-        client_id: 'UDLXPN3F3FDLXPIWUAI40YXL40CETQXRDZAVDRPYFLFTJHL4',
-        client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
-        v: 20180323
-    }
+    for (let i = 0; i < breweriesArr.length; i++) {
 
-    const queryString = formatQueryParams(params);
-    const url = FOURSQUARE_DETAILS_URL + '?' + queryString;
-    
-    fetch(url)
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-        }
-        throw new Error(response.statusText);
-    })
-        .then(responseJson => addDetailsToBrewery(index, responseJson.response))
-        .catch(error => displayError(error))
+      /*  const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
 
-    }
-
-function addDetailsToBrewery(index, details) {
-  return breweriesArr[index].details = details;
-    }
-
-function getDistanceToBrewery(index, brewery) {
- 
-    const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
-
-    const params = {
+        const params = {
 
         locations: [
             {
@@ -160,8 +135,8 @@ function getDistanceToBrewery(index, brewery) {
             },
             {
                 latLng: {
-                    lat: parseFloat(brewery.location.lat),
-                    lng: parseFloat(brewery.location.lng)
+                    lat: parseFloat(breweriesArr[i].location.lat),
+                    lng: parseFloat(breweriesArr[i].location.lng)
                 }
             }
         ]
@@ -169,7 +144,7 @@ function getDistanceToBrewery(index, brewery) {
 
     if (userCoords === undefined) {
 
-        breweriesArr[index].distance = ' ';
+        breweriesArr[i].distance = ' ';
 
     } else {
 
@@ -184,35 +159,53 @@ function getDistanceToBrewery(index, brewery) {
     
             if (response.distance && response.distance != undefined) {
     
-                breweriesArr[index].distance = `${response.distance[1].toFixed(1)} mi`;
+                breweriesArr[i].distance = `${response.distance[1].toFixed(1)} mi`;
     
             } else {
     
-                breweriesArr[index].distance = ' ';
+                breweriesArr[i].distance = ' ';
     
             }
         
         })
         .fail(function(response) {
             response.distance = ' ';
-            breweriesArr[index].distance = response.distance;
+            breweriesArr[i].distance = response.distance;
     
         })
 
+    } */
+
+        var origin = new google.maps.LatLng(parseFloat(userCoords.lat), parseFloat(userCoords.lng));
+
+        var destination = new google.maps.LatLng(parseFloat(breweriesArr[i].location.lat), parseFloat(breweriesArr[i].location.lng));
+
+        var service = new google.maps.DistanceMatrixService();
+
+        service.getDistanceMatrix(
+        {
+            origins: [origin],
+            destinations: [destination],
+            travelMode: 'DRIVING',
+            unitSystem: google.maps.UnitSystem.IMPERIAL,
+            avoidHighways: false,
+            avoidTolls: false
+        }, function(response, status) {
+
+            if (status == 'OK') {
+                breweriesArr[i].distance = response.rows[0].elements[0].distance;
+                
+            } else {
+                breweriesArr[i].distance = {
+                    value: ' ',
+                    text: ' '
+                }
+            }
+
+        });
+
     }
-
-}
-
-function addDistanceAndImages(results) {
-    breweriesArr = results.response.venues;
-
-    for (let i = 0; i < breweriesArr.length; i++) {
-
-        //getBreweryDetails(i, breweriesArr[i].id);
-        getDistanceToBrewery(i, breweriesArr[i]);
-
-        }
-
+    
     setTimeout(function() {renderResults(breweriesArr);}, 1500);
 
     }  
@@ -242,19 +235,15 @@ function renderResults(results) {
             let address = results[i].location.formattedAddress.join('<br>');
             
             resultsStr += `
-            <div id='${results[i].distance}' class='col-3 card' ontouchstart='this.classList.toggle('hover);'>
-                <div class='flipper'>
-                    <div class='card-body front'>
-                        <div>
+            <div id='${results[i].distance.value}' class='col-3 card'>
+                <div class='card-body'>
+                    <div>
                         <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
-                        </div>
-                        <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
                     </div>
-                    <div class='card-body back'>
-                        <address class='card-text'>
-                            ${address}
-                        </address>
-                    </div>
+                    <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance.text} </span>
+                    <address class='card-text'>
+                        ${address}
+                    </address>
                 </div>
             </div>
             `;
