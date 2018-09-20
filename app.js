@@ -306,7 +306,7 @@ function initMap(locations) {
         for (let i = 0; i < locations.length; i++) {
             setTimeout(function() {
                 addMarker();
-            }, i * 150);
+            }, i * 200);
         }
     }
 
