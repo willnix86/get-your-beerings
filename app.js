@@ -52,9 +52,9 @@ function getUserLocation() {
 
             `).insertAfter('header');
 
-     }, 
-
-{timeout:10000})}
+     }, {timeout:10000})
+    
+    };
 
 function watchClicks() {
 
@@ -70,6 +70,10 @@ function watchClicks() {
     $('.js-pagination').on('click', '#next-page', function(e){
         e.preventDefault();
         renderResults(breweriesArr);
+    });
+
+    $('main').on('click', '#map', 'google.maps.Marker', function(e) {
+        alert('clicked');
     });
 
   /*  $('main').on('change', '.sort-target', function(e){
@@ -238,16 +242,20 @@ function renderResults(results) {
             let address = results[i].location.formattedAddress.join('<br>');
             
             resultsStr += `
-            <div id='${results[i].distance}' class='col-3 card'>
-            <div class='card-body'>
-                <div>
-                <img class='card-logo' src='images/brewery.png' alt='brewery icon'> 
+            <div id='${results[i].distance}' class='col-3 card' ontouchstart='this.classList.toggle('hover);'>
+                <div class='flipper'>
+                    <div class='card-body front'>
+                        <div>
+                        <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
+                        </div>
+                        <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
+                    </div>
+                    <div class='card-body back'>
+                        <address class='card-text'>
+                            ${address}
+                        </address>
+                    </div>
                 </div>
-                <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance} </span>
-                <address class='card-text'>
-                    ${address}
-                </address>
-            </div>
             </div>
             `;
 
@@ -279,16 +287,47 @@ function initMap(locations) {
     let map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: userCoords.lat, lng: userCoords.lng},
         zoom: 11
-      });
+    });
 
-    for (i = 0; i < locations.length; i++) {
-        let pos = {lat: locations[i].location.lat, lng: locations[i].location.lng};
+    let image = {
+        url: 'http://devnx.io/beer-me/images/marker.png',
+        size: new google.maps.Size(60, 60),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(15, 21),
+        scaledSize: new google.maps.Size(30, 30),
+    } 
 
-        let marker = new google.maps.Marker({position: pos, map: map});
+    let markers = [];
+
+    let iterator = 0;
+
+    function drop() {
+
+        for (let i = 0; i < locations.length; i++) {
+            setTimeout(function() {
+                addMarker();
+            }, i * 150);
+        }
     }
 
-}
+    function addMarker() {
 
+        let pos = {lat: locations[iterator].location.lat, lng: locations[iterator].location.lng};
+
+        markers.push(new google.maps.Marker({
+            position: pos, 
+            icon: image, 
+            map: map,
+            animation: google.maps.Animation.DROP
+        }));
+
+        iterator++;
+ 
+    }
+
+    drop();
+
+}
 
 $(watchClicks(), getUserLocation());
 
