@@ -1,20 +1,20 @@
-let userCoords = {};
-let breweriesArr = [];
-let arrayIndex = 0;
-let numberOfRows = 4;
-let numberOfCols = 4;
-
-
-// workout arounds:
-    // one big data obj
-    // smaller functions ie 'getCoods'
-    // use const for objs/arrays so it fixes datatype
+const beerMeData = {
+    userCoords: {},
+    breweriesArr: [],
+    arrayIndex: 0,
+    numberOfRows: 4,
+    numberOfCols: 4
+}
 
 function getUserLocation() {
+
+    loadingScreen();
     
     navigator.geolocation.getCurrentPosition(function(position) {
-        userCoords.lat = position.coords.latitude;
-        userCoords.lng = position.coords.longitude;
+        beerMeData.userCoords.lat = position.coords.latitude;
+        beerMeData.userCoords.lng = position.coords.longitude;
+
+        $('.lds-default').remove();
         $(`
         <form name='brewery-search'>
             <fieldset>
@@ -31,30 +31,36 @@ function getUserLocation() {
         $('#city').focus();
 
     }, function() {
+        $('.lds-default').remove();
+        $(`
+        <form name='brewery-search'>
+            <fieldset>
+                <legend>Enter Location</legend>
 
-            $(`
-            <form name='brewery-search'>
-                <fieldset>
-                    <legend>Enter Location</legend>
+                <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                
 
-                    <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
-                    
+                <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
 
-                    <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
+            </fieldset>
+        </form>
 
-                </fieldset>
-            </form>
+        <section class='js-alert' role="alert" aria-live='assertive'>
+            <p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>
+        </section>
 
-            <section class='js-alert' role="alert" aria-live='assertive'>
-                <p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>
-            </section>
-
-            `).insertAfter('header');
-            $('#city').focus();
+        `).insertAfter('header');
+        $('#city').focus();
 
     }, {timeout:10000})
     
 };
+
+function loadingScreen() {
+    $(`
+        <div class="lds-default"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    `).insertBefore('#map');
+}
 
 function watchClicks() {
 
@@ -69,7 +75,7 @@ function watchClicks() {
 
     $('.js-pagination').on('click', '#next-page', function(e){
         e.preventDefault();
-        renderResults(breweriesArr);
+        renderResults(beerMeData.breweriesArr);
     });
 
   /*  $('main').on('change', '.sort-target', function(e){
@@ -117,11 +123,11 @@ function getBreweries(search, callback) {
 
 function getDistances(results) {
 
-    breweriesArr = results.response.venues;
+    beerMeData.breweriesArr = results.response.venues;
 
-    for (let i = 0; i < breweriesArr.length; i++) {
+    for (let i = 0; i < beerMeData.breweriesArr.length; i++) {
 
-        const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
+     /*   const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
 
         const params = {
 
@@ -174,10 +180,10 @@ function getDistances(results) {
         })
 
     } 
-    /* 
-        var origin = new google.maps.LatLng(parseFloat(userCoords.lat), parseFloat(userCoords.lng));
+    */ 
+        var origin = new google.maps.LatLng(parseFloat(beerMeData.userCoords.lat), parseFloat(beerMeData.userCoords.lng));
 
-        var destination = new google.maps.LatLng(parseFloat(breweriesArr[i].location.lat), parseFloat(breweriesArr[i].location.lng));
+        var destination = new google.maps.LatLng(parseFloat(beerMeData.breweriesArr[i].location.lat), parseFloat(beerMeData.breweriesArr[i].location.lng));
 
         var service = new google.maps.DistanceMatrixService();
 
@@ -192,20 +198,20 @@ function getDistances(results) {
         }, function(response, status) {
 
             if (status == 'OK') {
-                breweriesArr[i].distance = response.rows[0].elements[0].distance;
+                beerMeData.breweriesArr[i].distance = response.rows[0].elements[0].distance;
                 
             } else {
-                breweriesArr[i].distance = {
+                beerMeData.breweriesArr[i].distance = {
                     value: ' ',
                     text: ' '
                 }
             }
 
-        }); */
+        });
 
 } 
     
-    setTimeout(function() {renderResults(breweriesArr);}, 1500);
+    setTimeout(function() {renderResults(beerMeData.breweriesArr);}, 1500);
 
     }  
 
@@ -225,15 +231,15 @@ function renderResults(results) {
 
     let resultsStr = '';
 
-    for (let rowNumber = 0; rowNumber < numberOfRows; rowNumber++) {
+    for (let rowNumber = 0; rowNumber < beerMeData.numberOfRows; rowNumber++) {
 
         resultsStr = `<div class='js-results row' aria-live='polite'>`;
 
-        for (let columnNumber = 0, i = arrayIndex; columnNumber < numberOfCols; columnNumber++, i++) {
+        for (let columnNumber = 0, i = beerMeData.arrayIndex; columnNumber < beerMeData.numberOfCols; columnNumber++, i++) {
 
             let address = results[i].location.formattedAddress.join('<br>');
 
-            if (results[i].distance.value == null || results[i].distance.value) {
+            if (results[i].distance.value == null || results[i].distance.text == null) {
                 results[i].distance = {
                     value: ' ',
                     text: ' '
@@ -261,27 +267,27 @@ function renderResults(results) {
 
         $(resultsStr).insertBefore('.js-pagination');
         
-        arrayIndex += 4;
+        beerMeData.arrayIndex += 4;
 
-        if (arrayIndex >= 48) {
+        if (beerMeData.arrayIndex >= 48) {
             numberOfRows = 1;
             numberOfCols = 2;
         }
 
-        if (arrayIndex >= 52) {
+        if (beerMeData.arrayIndex >= 52) {
             $('#next-page').prop('hidden', true);
         }
 
     }
 
-    initMap(breweriesArr);
+    initMap(beerMeData.breweriesArr);
 
 };
 
 function initMap(locations) {
 
     let map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: userCoords.lat, lng: userCoords.lng},
+        center: {lat: beerMeData.userCoords.lat, lng: beerMeData.userCoords.lng},
         zoom: 11,
         disableDefaultUI: true,
         zoomControl: true
@@ -307,8 +313,8 @@ function initMap(locations) {
             return function() {
                 infowindow.setContent(`
                     <div class='marker-window'>
-                    <img class='marker-logo' src='images/bottlecap.png' alt='brewery icon'> 
-                    <a href='http://www.google.com/search?q=${locations[i].name}'>${locations[i].name}</a>
+                    <img class='marker-logo' src='images/sign.png' alt='brewery icon'> 
+                    <a href='http://www.google.com/search?q=${locations[i].name}' target='_default'>${locations[i].name}</a>
                     </div>
                     `);
                 infowindow.setPosition(pos);
