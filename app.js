@@ -69,7 +69,7 @@ function watchClicks() {
         resetResults();
         let searchTarget = $('#city');
         let search = searchTarget.val();
-        getBreweries(search, getDistances);
+        getBreweries(search);
         $('#city').val("");
     });
 
@@ -115,9 +115,9 @@ function formatQueryParams(params) {
     return queryItems.join('&');
 }
 
-function getBreweries(search, callback) {
+function getBreweries(search) {
 
-    const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
+    const searchURL = 'https://api.foursquare.com/v2/venues/search';
 
     const params = {
         client_id: 'UDLXPN3F3FDLXPIWUAI40YXL40CETQXRDZAVDRPYFLFTJHL4',
@@ -128,7 +128,18 @@ function getBreweries(search, callback) {
         categoryId: '50327c8591d4c4b30a586d5d'
     }
 
-    $.getJSON(FOURSQUARE_VENUE_URL, params, callback);
+    let queryString = formatQueryParams(params);
+    let url=  searchURL + '?' + queryString;
+
+    fetch(url)
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error(response.statusText);
+        })
+        .then(responseJson => getDistances(responseJson))
+        .catch(error => displayError(error))
 
 }
 
