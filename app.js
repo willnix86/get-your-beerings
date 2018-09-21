@@ -1,3 +1,4 @@
+// CAPITALISE THIS
 const beerMeData = {
     userCoords: {},
     breweriesArr: [],
@@ -16,13 +17,19 @@ function getUserLocation() {
 
         $('.lds-default').remove();
         $(`
-        <form name='brewery-search'>
+        <form name='brewery-search' class='brewery-search'>
             <fieldset>
                 <legend>Enter Location</legend>
 
                 <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
-                
 
+                <label for='radius'>Search within:</label>
+                <select form='brewery-search' name='radius' id='radius'>
+                    <option value='5'>5 miles</option>
+                    <option value='10'>10 miles</option>
+                    <option value='20'>20 miles</option>
+                </select>
+                
                 <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
 
             </fieldset>
@@ -33,13 +40,19 @@ function getUserLocation() {
     }, function() {
         $('.lds-default').remove();
         $(`
-        <form name='brewery-search'>
+        <form name='brewery-search' class='brewery-search'>
             <fieldset>
                 <legend>Enter Location</legend>
 
                 <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
-                
 
+                <label for='radius'>Search within:</label>
+                <select form='brewery-search' name='radius' id='radius'>
+                    <option value='5'>5 miles</option>
+                    <option value='10'>10 miles</option>
+                    <option value='20'>20 miles</option>
+                </select>
+                
                 <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
 
             </fieldset>
@@ -64,12 +77,13 @@ function loadingScreen() {
 
 function watchClicks() {
 
-    $('body').on('click', '#submit', function(e) {
+    $('body').on('submit', '.brewery-search', function(e) {
         e.preventDefault();
         resetResults();
         let searchTarget = $('#city');
         let search = searchTarget.val();
-        getBreweries(search);
+        let radius = ($('#radius').val() * 1609.34);
+        getBreweries(search, radius);
         $('#city').val("");
     });
 
@@ -115,7 +129,7 @@ function formatQueryParams(params) {
     return queryItems.join('&');
 }
 
-function getBreweries(search) {
+function getBreweries(search, radius) {
 
     const searchURL = 'https://api.foursquare.com/v2/venues/search';
 
@@ -124,6 +138,7 @@ function getBreweries(search) {
         client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
         v: 20180323,
         near: search,
+        radius: radius,
         limit: 50,
         categoryId: '50327c8591d4c4b30a586d5d'
     }
