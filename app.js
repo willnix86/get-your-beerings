@@ -232,6 +232,13 @@ function renderResults(results) {
         for (let columnNumber = 0, i = arrayIndex; columnNumber < numberOfCols; columnNumber++, i++) {
 
             let address = results[i].location.formattedAddress.join('<br>');
+
+            if (results[i].distance.value == null || results[i].distance.value) {
+                results[i].distance = {
+                    value: ' ',
+                    text: ' '
+                }
+            }
             
             resultsStr += `
             <div id='${results[i].distance.value}' class='col-3 card'>
