@@ -1,5 +1,4 @@
-// CAPITALISE THIS
-const beerMeData = {
+const BEER_ME_DATA = {
     userCoords: {},
     breweriesArr: [],
     arrayIndex: 0,
@@ -12,8 +11,8 @@ function getUserLocation() {
     loadingScreen();
     
     navigator.geolocation.getCurrentPosition(function(position) {
-        beerMeData.userCoords.lat = position.coords.latitude;
-        beerMeData.userCoords.lng = position.coords.longitude;
+        BEER_ME_DATA.userCoords.lat = position.coords.latitude;
+        BEER_ME_DATA.userCoords.lng = position.coords.longitude;
 
         $('.lds-default').remove();
         $(`
@@ -89,26 +88,26 @@ function watchClicks() {
 
     $('.js-pagination').on('click', '#next-page', function(e){
         e.preventDefault();
-        renderResults(beerMeData.breweriesArr);
+        renderResults(BEER_ME_DATA.breweriesArr);
     });
 
     $('main').on('change', '.sort-target', function(e){
         $('.js-results').remove();
-        beerMeData.arrayIndex = 0;
-        beerMeData.numberOfRows = 4;
-        beerMeData.numberOfCols = 4;
+        BEER_ME_DATA.arrayIndex = 0;
+        BEER_ME_DATA.numberOfRows = 4;
+        BEER_ME_DATA.numberOfCols = 4;
         if ($('#name').prop('checked')) {
-        sortResults(getNameVal, beerMeData.breweriesArr);
+        sortResults(getNameVal, BEER_ME_DATA.breweriesArr);
         } else if ($('#distance').prop('checked')) {
-        sortResults(getDistanceVal, beerMeData.breweriesArr);
+        sortResults(getDistanceVal, BEER_ME_DATA.breweriesArr);
         }
     });
 }
 
 function resetResults() {
-    beerMeData.arrayIndex = 0;
-    beerMeData.numberOfRows = 4;
-    beerMeData.numberOfCols = 4;
+    BEER_ME_DATA.arrayIndex = 0;
+    BEER_ME_DATA.numberOfRows = 4;
+    BEER_ME_DATA.numberOfCols = 4;
     $('.js-results').remove();
     $('#sort-results').remove();
     $('#map').empty();
@@ -138,8 +137,9 @@ function getBreweries(search, radius) {
         client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
         v: 20180323,
         near: search,
+        query: 'brewery',
         radius: radius,
-        limit: 50,
+        limit: 5,
         categoryId: '50327c8591d4c4b30a586d5d'
     }
 
@@ -160,13 +160,13 @@ function getBreweries(search, radius) {
 
 function getDistances(results) {
 
-    beerMeData.breweriesArr = results.response.venues;
+    BEER_ME_DATA.breweriesArr = results.response.venues;
 
-    for (let i = 0; i < beerMeData.breweriesArr.length; i++) {
+    for (let i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
 
-        var origin = new google.maps.LatLng(parseFloat(beerMeData.userCoords.lat), parseFloat(beerMeData.userCoords.lng));
+        var origin = new google.maps.LatLng(parseFloat(BEER_ME_DATA.userCoords.lat), parseFloat(BEER_ME_DATA.userCoords.lng));
 
-        var destination = new google.maps.LatLng(parseFloat(beerMeData.breweriesArr[i].location.lat), parseFloat(beerMeData.breweriesArr[i].location.lng));
+        var destination = new google.maps.LatLng(parseFloat(BEER_ME_DATA.breweriesArr[i].location.lat), parseFloat(BEER_ME_DATA.breweriesArr[i].location.lng));
 
         var service = new google.maps.DistanceMatrixService();
 
@@ -181,10 +181,10 @@ function getDistances(results) {
         }, function(response, status) {
 
             if (status == 'OK') {
-                beerMeData.breweriesArr[i].distance = response.rows[0].elements[0].distance;
+                BEER_ME_DATA.breweriesArr[i].distance = response.rows[0].elements[0].distance;
                 
             } else {
-                beerMeData.breweriesArr[i].distance = {
+                BEER_ME_DATA.breweriesArr[i].distance = {
                     value: ' ',
                     text: ' '
                 }
@@ -194,15 +194,14 @@ function getDistances(results) {
 
     } 
     
-    setTimeout(function() {sortResults(getDistanceVal,beerMeData.breweriesArr);}, 1500);
+    setTimeout(function() {sortResults(getDistanceVal,BEER_ME_DATA.breweriesArr);}, 1500);
 
 } 
 
 function getDistancesWhileTesting(results) {
-
-    beerMeData.breweriesArr = results.response.venues;
+    BEER_ME_DATA.breweriesArr = results.response.venues;
     
-    for (let i = 0; i < beerMeData.breweriesArr.length; i++) {
+    for (let i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
     
         const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
     
@@ -211,22 +210,22 @@ function getDistancesWhileTesting(results) {
             locations: [
                 {
                     latLng: {
-                        lat: parseFloat(beerMeData.userCoords.lat),
-                        lng: parseFloat(beerMeData.userCoords.lng)
+                        lat: parseFloat(BEER_ME_DATA.userCoords.lat),
+                        lng: parseFloat(BEER_ME_DATA.userCoords.lng)
                     }
                 },
                 {
                     latLng: {
-                        lat: parseFloat(beerMeData.breweriesArr[i].location.lat),
-                        lng: parseFloat(beerMeData.breweriesArr[i].location.lng)
+                        lat: parseFloat(BEER_ME_DATA.breweriesArr[i].location.lat),
+                        lng: parseFloat(BEER_ME_DATA.breweriesArr[i].location.lng)
                     }
                 }
             ]
         };
     
-        if (beerMeData.userCoords === undefined) {
+        if (BEER_ME_DATA.userCoords === undefined) {
     
-            beerMeData.breweriesArr[i].distance = {
+            BEER_ME_DATA.breweriesArr[i].distance = {
                 value: ' ',
                 text: ' '
             }
@@ -244,11 +243,11 @@ function getDistancesWhileTesting(results) {
         
                 if (response.distance && response.distance != undefined) {
         
-                    beerMeData.breweriesArr[i].distance = `${response.distance[1].toFixed(1)} mi`;
+                    BEER_ME_DATA.breweriesArr[i].distance = `${response.distance[1].toFixed(1)} mi`;
         
                 } else {
         
-                    beerMeData.breweriesArr[i].distance = {
+                    BEER_ME_DATA.breweriesArr[i].distance = {
                         value: ' ',
                         text: ' '
                     }
@@ -257,7 +256,7 @@ function getDistancesWhileTesting(results) {
             
             })
             .fail(function(response) {
-                beerMeData.breweriesArr[i].distance = {
+                BEER_ME_DATA.breweriesArr[i].distance = {
                     value: ' ',
                     text: ' '
                 }
@@ -266,7 +265,7 @@ function getDistancesWhileTesting(results) {
     
         } 
         
-        setTimeout(function() {sortResults(getDistanceVal,beerMeData.breweriesArr);}, 1500);
+        setTimeout(function() {sortResults(getDistanceVal,BEER_ME_DATA.breweriesArr);}, 1500);
     
     } 
 }
@@ -280,7 +279,6 @@ function getNameVal(obj) {
 }
 
 function sortResults(propertyRetriever, array) {
-
     array.sort(function (a, b) {
         let valueA = propertyRetriever(a);
         let valueB = propertyRetriever(b);
@@ -304,12 +302,12 @@ function renderResults(results) {
 
     let resultsStr = '';
 
-    for (let rowNumber = 0; rowNumber < beerMeData.numberOfRows; rowNumber++) {
+    for (let rowNumber = 0; rowNumber < BEER_ME_DATA.numberOfRows; rowNumber++) {
 
         resultsStr = `<div class='js-results row' aria-live='polite'>`;
 
-        for (let columnNumber = 0, i = beerMeData.arrayIndex; columnNumber < beerMeData.numberOfCols; columnNumber++, i++) {
-
+        for (let columnNumber = 0, i = BEER_ME_DATA.arrayIndex; columnNumber < BEER_ME_DATA.numberOfCols; columnNumber++, i++) {
+debugger
             let address = results[i].location.formattedAddress.join('<br>');
 
             if (results[i].distance.value == null || results[i].distance.text == null) {
@@ -340,26 +338,26 @@ function renderResults(results) {
 
         $(resultsStr).insertBefore('.js-pagination');
         
-        beerMeData.arrayIndex += 4;
+        BEER_ME_DATA.arrayIndex += 4;
 
-        if (beerMeData.arrayIndex >= 48) {
+        if (BEER_ME_DATA.arrayIndex >= 48) {
             numberOfRows = 1;
             numberOfCols = 2;
         }
 
-        if (beerMeData.arrayIndex >= 52) {
+        if (BEER_ME_DATA.arrayIndex >= 52) {
             $('#next-page').prop('hidden', true);
         }
 
     }
 
-    initMap(beerMeData.breweriesArr);
+    initMap(BEER_ME_DATA.breweriesArr);
 };
 
 function initMap(locations) {
 
     let map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: beerMeData.userCoords.lat, lng: beerMeData.userCoords.lng},
+        center: {lat: BEER_ME_DATA.breweriesArr[0].location.lat, lng: BEER_ME_DATA.breweriesArr[0].location.lng},
         zoom: 11,
         disableDefaultUI: true,
         zoomControl: true
