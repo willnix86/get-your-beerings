@@ -138,7 +138,7 @@ function getBreweries(search) {
             }
             throw new Error(response.statusText);
         })
-        .then(responseJson => getDistances(responseJson))
+        .then(responseJson => getDistancesWhileTesting(responseJson))
         .catch(error => displayError(error))
 
 }
@@ -358,13 +358,17 @@ function initMap(locations) {
         scaledSize: new google.maps.Size(30, 30),
     } 
 
-    var infowindow = new google.maps.InfoWindow();
+    let infowindow = new google.maps.InfoWindow();
+
+    let markers = [];
 
     for (i = 0; i < locations.length; i++) {
 
         let pos = {lat: locations[i].location.lat, lng: locations[i].location.lng};
 
         let marker = new google.maps.Marker({position: pos, icon: image, map: map});
+
+        markers.push(marker);
 
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
@@ -380,6 +384,9 @@ function initMap(locations) {
         })(marker, i));
     
     }
+
+    let markerCluster = new MarkerClusterer(map, markers,
+        {imagePath: 'images/m'});
 
     if ($('#sort-results').length == 0) {
         $(`
