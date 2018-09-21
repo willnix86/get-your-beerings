@@ -1,5 +1,3 @@
-const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
-
 let userCoords = {};
 let breweriesArr = [];
 let arrayIndex = 0;
@@ -30,6 +28,7 @@ function getUserLocation() {
             </fieldset>
         </form>
         `).insertAfter('header');
+        $('#city').focus();
 
     }, function() {
 
@@ -51,10 +50,11 @@ function getUserLocation() {
             </section>
 
             `).insertAfter('header');
+            $('#city').focus();
 
-     }, {timeout:10000})
+    }, {timeout:10000})
     
-    };
+};
 
 function watchClicks() {
 
@@ -72,10 +72,6 @@ function watchClicks() {
         renderResults(breweriesArr);
     });
 
-    $('#map').on('click', 'google.maps.Marker', function(e) {
-        alert('clicked');
-    });
-
   /*  $('main').on('change', '.sort-target', function(e){
         alert('changed');
     }); */
@@ -84,6 +80,7 @@ function watchClicks() {
 
 function resetResults() {
     $('.js-results').remove();
+    $('#map').empty();
 }
 
 function displayError(err) {
@@ -99,16 +96,18 @@ function formatQueryParams(params) {
     const queryItems = Object.keys(params)
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     return queryItems.join('&');
-  }
+}
 
 function getBreweries(search, callback) {
+
+    const FOURSQUARE_VENUE_URL = 'https://api.foursquare.com/v2/venues/search';
 
     const params = {
         client_id: 'UDLXPN3F3FDLXPIWUAI40YXL40CETQXRDZAVDRPYFLFTJHL4',
         client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
         v: 20180323,
         near: search,
-        limit: 5,
+        limit: 50,
         categoryId: '50327c8591d4c4b30a586d5d'
     }
 
@@ -122,7 +121,7 @@ function getDistances(results) {
 
     for (let i = 0; i < breweriesArr.length; i++) {
 
-      /*  const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
+        const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
 
         const params = {
 
@@ -174,8 +173,8 @@ function getDistances(results) {
     
         })
 
-    } */
-
+    } 
+    /* 
         var origin = new google.maps.LatLng(parseFloat(userCoords.lat), parseFloat(userCoords.lng));
 
         var destination = new google.maps.LatLng(parseFloat(breweriesArr[i].location.lat), parseFloat(breweriesArr[i].location.lng));
@@ -202,9 +201,9 @@ function getDistances(results) {
                 }
             }
 
-        });
+        }); */
 
-    }
+} 
     
     setTimeout(function() {renderResults(breweriesArr);}, 1500);
 
@@ -240,7 +239,8 @@ function renderResults(results) {
                     <div>
                         <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
                     </div>
-                    <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> <span class='js-distance'>${results[i].distance.text} </span>
+                    <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> 
+                    <p class='js-distance'>${results[i].distance.text} </p>
                     <address class='card-text'>
                         ${address}
                     </address>
@@ -275,7 +275,9 @@ function initMap(locations) {
 
     let map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: userCoords.lat, lng: userCoords.lng},
-        zoom: 11
+        zoom: 11,
+        disableDefaultUI: true,
+        zoomControl: true
     });
 
     let image = {
@@ -286,48 +288,29 @@ function initMap(locations) {
         scaledSize: new google.maps.Size(30, 30),
     } 
 
-    let markers = [];
+    var infowindow = new google.maps.InfoWindow();
 
-    let iterator = 0;
+    for (i = 0; i < locations.length; i++) {
 
-    function drop() {
+        let pos = {lat: locations[i].location.lat, lng: locations[i].location.lng};
 
-        for (let i = 0; i < locations.length; i++) {
-            setTimeout(function() {
-                addMarker();
-            }, i * 200);
-        }
+        let marker = new google.maps.Marker({position: pos, icon: image, map: map});
+
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infowindow.setContent(`
+                    <div class='marker-window'>
+                    <img class='marker-logo' src='images/bottlecap.png' alt='brewery icon'> 
+                    <a href='http://www.google.com/search?q=${locations[i].name}'>${locations[i].name}</a>
+                    </div>
+                    `);
+                infowindow.setPosition(pos);
+                infowindow.open(map, (marker - 19));
+            }
+        })(marker, i));
+                
     }
-
-    function addMarker() {
-
-        let pos = {lat: locations[iterator].location.lat, lng: locations[iterator].location.lng};
-
-        markers.push(new google.maps.Marker({
-            position: pos, 
-            icon: image, 
-            map: map,
-            animation: google.maps.Animation.DROP
-        }));
-
-        iterator++;
- 
-    }
-
-    drop();
 
 }
 
 $(watchClicks(), getUserLocation());
-
-/* 
-            <img class='card-image' src=${results[i].details.venue.photos.groups[1].items[1].prefix}200x200${results[i].details.venue.photos.groups[1].items[1].suffix} alt='photo of ${results[i].name}"> 
-            <div class='card-status'>${results[i].details.venue.hours.status}</div>
-            <div class='card-footer'>
-                <a class='social-link' href='www.instagram.com/${results[i].details.venue.contact.instagram}><img class='social-img' src='images/insta.png' alt='instagram-link logo for ${results[i].name}'></a>
-                <a class='social-link' href='tel:${results[i].details.venue.contact.phone}><img class='social-img' src='images/phone.png' alt='call ${results[i].name}'></a>
-                <a class='social-link' href='www.twitter.com/${results[i].details.venue.contact.twitter}><img class='social-img' src='images/twitter.png' alt='twitter-link logo for ${results[i].name}'></a>
-            </div>
-
-*/
-
