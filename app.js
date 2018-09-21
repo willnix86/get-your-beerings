@@ -78,14 +78,25 @@ function watchClicks() {
         renderResults(beerMeData.breweriesArr);
     });
 
-  /*  $('main').on('change', '.sort-target', function(e){
-        alert('changed');
-    }); */
-
+    $('main').on('change', '.sort-target', function(e){
+        $('.js-results').remove();
+        beerMeData.arrayIndex = 0;
+        beerMeData.numberOfRows = 4;
+        beerMeData.numberOfCols = 4;
+        if ($('#name').prop('checked')) {
+        sortResults(getNameVal, beerMeData.breweriesArr);
+        } else if ($('#distance').prop('checked')) {
+        sortResults(getDistanceVal, beerMeData.breweriesArr);
+        }
+    });
 }
 
 function resetResults() {
+    beerMeData.arrayIndex = 0;
+    beerMeData.numberOfRows = 4;
+    beerMeData.numberOfCols = 4;
     $('.js-results').remove();
+    $('#sort-results').remove();
     $('#map').empty();
 }
 
@@ -127,60 +138,6 @@ function getDistances(results) {
 
     for (let i = 0; i < beerMeData.breweriesArr.length; i++) {
 
-     /*   const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
-
-        const params = {
-
-        locations: [
-            {
-                latLng: {
-                    lat: parseFloat(userCoords.lat),
-                    lng: parseFloat(userCoords.lng)
-                }
-            },
-            {
-                latLng: {
-                    lat: parseFloat(breweriesArr[i].location.lat),
-                    lng: parseFloat(breweriesArr[i].location.lng)
-                }
-            }
-        ]
-    };
-
-    if (userCoords === undefined) {
-
-        breweriesArr[i].distance = ' ';
-
-    } else {
-
-        $.ajax({
-            type: 'POST',
-            url: DISTANCE_MATRIX_URL,
-            data: JSON.stringify(params),
-            contentType: "application/json",
-            dataType: 'json',
-        })
-        .done(function (response) {
-    
-            if (response.distance && response.distance != undefined) {
-    
-                breweriesArr[i].distance = `${response.distance[1].toFixed(1)} mi`;
-    
-            } else {
-    
-                breweriesArr[i].distance = ' ';
-    
-            }
-        
-        })
-        .fail(function(response) {
-            response.distance = ' ';
-            breweriesArr[i].distance = response.distance;
-    
-        })
-
-    } 
-    */ 
         var origin = new google.maps.LatLng(parseFloat(beerMeData.userCoords.lat), parseFloat(beerMeData.userCoords.lng));
 
         var destination = new google.maps.LatLng(parseFloat(beerMeData.breweriesArr[i].location.lat), parseFloat(beerMeData.breweriesArr[i].location.lng));
@@ -209,25 +166,115 @@ function getDistances(results) {
 
         });
 
-} 
+    } 
     
-    setTimeout(function() {renderResults(beerMeData.breweriesArr);}, 1500);
+    setTimeout(function() {sortResults(getDistanceVal,beerMeData.breweriesArr);}, 1500);
 
-    }  
+} 
+
+function getDistancesWhileTesting(results) {
+
+    beerMeData.breweriesArr = results.response.venues;
+    
+    for (let i = 0; i < beerMeData.breweriesArr.length; i++) {
+    
+        const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
+    
+        const params = {
+    
+            locations: [
+                {
+                    latLng: {
+                        lat: parseFloat(beerMeData.userCoords.lat),
+                        lng: parseFloat(beerMeData.userCoords.lng)
+                    }
+                },
+                {
+                    latLng: {
+                        lat: parseFloat(beerMeData.breweriesArr[i].location.lat),
+                        lng: parseFloat(beerMeData.breweriesArr[i].location.lng)
+                    }
+                }
+            ]
+        };
+    
+        if (beerMeData.userCoords === undefined) {
+    
+            beerMeData.breweriesArr[i].distance = {
+                value: ' ',
+                text: ' '
+            }
+    
+        } else {
+    
+            $.ajax({
+                type: 'POST',
+                url: DISTANCE_MATRIX_URL,
+                data: JSON.stringify(params),
+                contentType: "application/json",
+                dataType: 'json',
+            })
+            .done(function (response) {
+        
+                if (response.distance && response.distance != undefined) {
+        
+                    beerMeData.breweriesArr[i].distance = `${response.distance[1].toFixed(1)} mi`;
+        
+                } else {
+        
+                    beerMeData.breweriesArr[i].distance = {
+                        value: ' ',
+                        text: ' '
+                    }
+        
+                }
+            
+            })
+            .fail(function(response) {
+                beerMeData.breweriesArr[i].distance = {
+                    value: ' ',
+                    text: ' '
+                }
+        
+            })
+    
+        } 
+        
+        setTimeout(function() {sortResults(getDistanceVal,beerMeData.breweriesArr);}, 1500);
+    
+    } 
+}
+
+function getDistanceVal(obj) {
+    return obj.distance.value;
+}
+
+function getNameVal(obj) {
+    return obj.name.toUpperCase();
+}
+
+function sortResults(propertyRetriever, array) {
+
+    array.sort(function (a, b) {
+        let valueA = propertyRetriever(a);
+        let valueB = propertyRetriever(b);
+
+            if (valueA < valueB) {
+                return -1;
+            } else if (valueA > valueB) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+    renderResults(array);
+
+}
 
 function renderResults(results) {
 
     $('#next-page').prop('hidden', false);
-
-  /*  $(`
-    <form name='sort-results'>
-        <fieldset>
-            <legend>Sort results</legend>
-            <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='distance' checked>By Name</label>
-            <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='distance'>By Distance</label>
-        </fieldset>
-    </form>
-    `).insertBefore('.js-results'); */
 
     let resultsStr = '';
 
@@ -281,7 +328,6 @@ function renderResults(results) {
     }
 
     initMap(beerMeData.breweriesArr);
-
 };
 
 function initMap(locations) {
@@ -321,8 +367,20 @@ function initMap(locations) {
                 infowindow.open(map, (marker - 19));
             }
         })(marker, i));
-                
+    
     }
+
+    if ($('#sort-results').length == 0) {
+        $(`
+            <form name='sort-results' id='sort-results'>
+                <fieldset>
+                    <legend>Sort results</legend>
+                    <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
+                    <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
+                </fieldset>
+            </form>
+        `).insertAfter('#map');
+    };
 
 }
 
