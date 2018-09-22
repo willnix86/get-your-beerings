@@ -3,7 +3,9 @@ const BEER_ME_DATA = {
     breweriesArr: [],
     arrayIndex: 0,
     numberOfRows: 4,
-    numberOfCols: 4
+    numberOfCols: 4,
+    search: '',
+    radius: 5
 }
 
 function getUserLocation() {
@@ -80,9 +82,9 @@ function watchClicks() {
         e.preventDefault();
         resetResults();
         let searchTarget = $('#city');
-        let search = searchTarget.val();
-        let radius = ($('#radius').val() * 1609.34);
-        getBreweries(search, radius);
+        BEER_ME_DATA.search = searchTarget.val();
+        BEER_ME_DATA.radius = ($('#radius').val() * 1609.34);
+        getBreweries(BEER_ME_DATA.search, BEER_ME_DATA.radius);
         $('#city').val("");
     });
 
@@ -108,6 +110,8 @@ function resetResults() {
     BEER_ME_DATA.arrayIndex = 0;
     BEER_ME_DATA.numberOfRows = 4;
     BEER_ME_DATA.numberOfCols = 4;
+    BEER_ME_DATA.radius = 5;
+    BEER_ME_DATA.search = '';
     $('.js-results').remove();
     $('#sort-results').remove();
     $('#map').empty();
@@ -139,7 +143,7 @@ function getBreweries(search, radius) {
         near: search,
         query: 'brewery',
         radius: radius,
-        limit: 5,
+        limit: 50,
         categoryId: '50327c8591d4c4b30a586d5d'
     }
 
@@ -153,7 +157,7 @@ function getBreweries(search, radius) {
             }
             throw new Error(response.statusText);
         })
-        .then(responseJson => getDistancesWhileTesting(responseJson))
+        .then(responseJson => getDistances(responseJson))
         .catch(error => displayError(error))
 
 }
@@ -307,7 +311,7 @@ function renderResults(results) {
         resultsStr = `<div class='js-results row' aria-live='polite'>`;
 
         for (let columnNumber = 0, i = BEER_ME_DATA.arrayIndex; columnNumber < BEER_ME_DATA.numberOfCols; columnNumber++, i++) {
-debugger
+
             let address = results[i].location.formattedAddress.join('<br>');
 
             if (results[i].distance.value == null || results[i].distance.text == null) {
@@ -320,7 +324,7 @@ debugger
             resultsStr += `
             <div id='${results[i].distance.value}' class='col-3 card'>
                 <div class='card-body'>
-                    <div>
+                    <div class='card-logo__wrapper'>
                         <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
                     </div>
                     <a class='brewery-name card-title' href="https://www.google.com/search?q=${results[i].name}" target="_default">${results[i].name}</a> 
@@ -340,12 +344,12 @@ debugger
         
         BEER_ME_DATA.arrayIndex += 4;
 
-        if (BEER_ME_DATA.arrayIndex >= 48) {
+        if (BEER_ME_DATA.arrayIndex >= (results.length - 2)) {
             numberOfRows = 1;
             numberOfCols = 2;
         }
 
-        if (BEER_ME_DATA.arrayIndex >= 52) {
+        if (BEER_ME_DATA.arrayIndex >= results.length) {
             $('#next-page').prop('hidden', true);
         }
 
@@ -359,6 +363,276 @@ function initMap(locations) {
     let map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: BEER_ME_DATA.breweriesArr[0].location.lat, lng: BEER_ME_DATA.breweriesArr[0].location.lng},
         zoom: 11,
+        styles: [
+                    {
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#ebe3cd"
+                        }
+                    ]
+                    },
+                    {
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#523735"
+                        }
+                    ]
+                    },
+                    {
+                    "elementType": "labels.text.stroke",
+                    "stylers": [
+                        {
+                        "color": "#f5f1e6"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#c9b2a6"
+                        },
+                        {
+                        "saturation": -40
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#dcd2be"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#ae9e90"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "landscape.natural",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi",
+                    "elementType": "labels.text",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#93817c"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi.business",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi.park",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                        "color": "#a5b076"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi.park",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#447530"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#f5f1e6"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.arterial",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#fdfcf8"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#f8c967"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#f9c833"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway.controlled_access",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#e98d58"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway.controlled_access",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#fe9850"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.local",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.local",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#806b63"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.line",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.line",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#8f7d77"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.line",
+                    "elementType": "labels.text.stroke",
+                    "stylers": [
+                        {
+                        "color": "#ebe3cd"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.station",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "water",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                        "color": "#b9d3c2"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "water",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#92998d"
+                        }
+                    ]
+                    }
+                ],
         disableDefaultUI: true,
         zoomControl: true
     });

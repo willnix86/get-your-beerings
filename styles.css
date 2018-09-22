@@ -7,7 +7,7 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     text-align: center;
-    padding: 30px 0 20px; 0;
+    padding: 30px 0 20px 0;
 }
 
 h1 {
@@ -60,7 +60,7 @@ input[type='text'] {
     padding: 0 10px;
 }
 
-input[type='text']:focus {
+input[type='text']:focus, select:focus, .card-title:focus  {
     outline: 3px solid orange;
     outline-offset: -.15em;
     border-radius: 5px;
@@ -68,7 +68,7 @@ input[type='text']:focus {
 
 select {
     width: 85px;
-    wight: auto;
+    height: auto;
     font-size: 15px;
     height: 30px;
     border: none;
@@ -104,7 +104,7 @@ button[type='submit']:focus, #next-page:focus {
 
 #map {
     width: 100%;
-    height: 350px;
+    height: 450px;
     margin-bottom: 50px;
 }
 
@@ -120,12 +120,49 @@ button[type='submit']:focus, #next-page:focus {
 
 .card {
     margin-bottom: 50px;
+    padding: 15px 10px;
+    height: 280px;
+    margin: 0 0.5% 50px 0.5%;
+    background-color: #f9c902;
+    box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.0);
+    transition: 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 5px 7px 17px 0px rgba(0,0,0,0.38), -5px 7px 17px 0px rgba(0,0,0,0.38);
+    transition: 0.4s ease-in-out;
+}
+
+.card-logo__wrapper {
+    margin-bottom: 10px;
 }
 
 .card-logo {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     margin: 0 auto;
+}
+
+.card-title {
+    font-size: 14px;
+    color: black;
+}
+
+.card-title:hover {
+    color:#FD4A4A;
+}
+
+.card-title:visited {
+    color: #FD4A4A;
+}
+
+.card-title:focus  {
+    outline: 1px solid orange;
+    border-radius: 5px;
+}
+
+address, .js-distance {
+    font-size: 13px;
 }
 
 .marker-window {
