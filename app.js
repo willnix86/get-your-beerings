@@ -141,7 +141,7 @@ function getBreweries(search, radius) {
         client_secret: 'MP0EYU1LNSWMR20S3AXZDJ05KMQOMNIIPIRE4ZRTCXV4IFYI',
         v: 20180323,
         near: search,
-        query: 'brewery',
+        //query: 'brewery',
         radius: radius,
         limit: 50,
         categoryId: '50327c8591d4c4b30a586d5d'
@@ -157,7 +157,7 @@ function getBreweries(search, radius) {
             }
             throw new Error(response.statusText);
         })
-        .then(responseJson => getDistances(responseJson))
+        .then(responseJson => getDistancesWhileTesting(responseJson))
         .catch(error => displayError(error))
 
 }
