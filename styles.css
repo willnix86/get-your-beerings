@@ -148,10 +148,6 @@ button[type='submit']:focus, #next-page:focus {
     color: black;
 }
 
-.card-title:hover {
-    color:#FD4A4A;
-}
-
 .card-title:visited {
     color: #FD4A4A;
 }
