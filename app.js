@@ -143,7 +143,7 @@ function getBreweries(search, radius) {
         near: search,
         //query: 'brewery',
         radius: radius,
-        limit: 50,
+        limit: 2,
         categoryId: '50327c8591d4c4b30a586d5d'
     }
 
@@ -157,7 +157,7 @@ function getBreweries(search, radius) {
             }
             throw new Error(response.statusText);
         })
-        .then(responseJson => getDistancesWhileTesting(responseJson))
+        .then(responseJson => getDistances(responseJson))
         .catch(error => displayError(error))
 
 }
@@ -296,7 +296,8 @@ function sortResults(propertyRetriever, array) {
             }
         });
 
-    renderResults(array);
+    // SEND RESULTS TO GET GOOGLE ID & DETAILS
+   renderResults(array);
 
 }
 
@@ -311,7 +312,8 @@ function renderResults(results) {
         resultsStr = `<div class='js-results row' aria-live='polite'>`;
 
         for (let columnNumber = 0, i = BEER_ME_DATA.arrayIndex; columnNumber < BEER_ME_DATA.numberOfCols; columnNumber++, i++) {
-
+            
+            console.log(results[i].location.formattedAddress.join('<br>'));
             let address = results[i].location.formattedAddress.join('<br>');
 
             if (results[i].distance.value == null || results[i].distance.text == null) {
@@ -636,6 +638,25 @@ function initMap(locations) {
         disableDefaultUI: true,
         zoomControl: true
     });
+
+    let service = new google.maps.places.PlacesService(map);
+
+    for (let i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
+
+        let request = {
+            query: BEER_ME_DATA.breweriesArr[i].name,
+            fields: ['place_id', 'rating', 'website']
+        };
+
+        service.findPlaceFromQuery(request, addData);
+
+    }
+
+    function addData(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          console.log(results);
+        }
+      }
 
     let image = {
         url: 'http://devnx.io/beer-me/images/marker.png',
