@@ -23,8 +23,9 @@ function getUserLocation() {
         <form name='brewery-search' class='brewery-search'>
             <fieldset>
                 <legend>Enter Location</legend>
+                <p class='legend-sub'>Search by City, State, or Post-Code</p>
 
-                <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London"></label>
+                <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London, MK45 4EP"></label>
 
                 <label for='radius'>Search within:</label>
                 <select form='brewery-search' name='radius' id='radius'>
@@ -348,7 +349,7 @@ function renderResults(results, map) {
                     <div class='card-logo__wrapper'>
                         <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
                     </div>
-                    <a class='brewery-name card-title' href="${results[i].website}" target="_default">${results[i].name}</a> 
+                    <a class='brewery-name card-title' href='http://www.google.com/search?q=${BEER_ME_DATA.breweriesArr[i].name}' target="_default">${results[i].name}</a> 
                     <p class='distance'>${results[i].distance.text}</p>
                     <p class='rating'>Rating: ${results[i].rating}</p>
                     <address class='card-text'>
@@ -412,7 +413,7 @@ function setMarkers(map) {
                     infowindow.setContent(`
                         <div class='marker-window'>
                         <img class='marker-logo' src='images/sign.png' alt='brewery icon'> 
-                        <a class='marker-title' href='${BEER_ME_DATA.breweriesArr[i].website}' target='_default'>${BEER_ME_DATA.breweriesArr[i].name}</a>
+                        <a class='marker-title' href='http://www.google.com/search?q=${BEER_ME_DATA.breweriesArr[i].name}' target='_default'>${BEER_ME_DATA.breweriesArr[i].name}</a>
                         <p>Rating: ${BEER_ME_DATA.breweriesArr[i].rating}<p>
                         <p>${BEER_ME_DATA.breweriesArr[i].formatted_address}</p>
                         </div>
@@ -744,18 +745,18 @@ function initMap() {
         }
     }
 
-    if ($('#sort-results').length == 0) {
-        $(`
-            <form name='sort-results' id='sort-results'>
-                <fieldset>
-                    <legend>Sort results</legend>
-                    <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
-                    <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
-                    <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
-                </fieldset>
-            </form>
-        `).insertAfter('#map');
-    };
+    // if ($('#sort-results').length == 0) {
+    //     $(`
+    //         <form name='sort-results' id='sort-results'>
+    //             <fieldset>
+    //                 <legend>Sort results</legend>
+    //                 <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
+    //                 <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
+    //                 <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
+    //             </fieldset>
+    //         </form>
+    //     `).insertAfter('#map');
+    // };
 
 }
 
