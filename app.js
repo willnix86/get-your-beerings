@@ -7,6 +7,7 @@ const BEER_ME_DATA = {
     search: '',
     radius: 8046.7,
     latLng: {},
+    markers: []
 }
 
 function getUserLocation() {
@@ -92,8 +93,9 @@ function watchClicks() {
     $('main').on('change', '.sort-target', function(e){
         $('.js-results').remove();
         BEER_ME_DATA.arrayIndex = 0;
-        BEER_ME_DATA.numberOfRows = 4;
+        BEER_ME_DATA.numberOfRows = 5;
         BEER_ME_DATA.numberOfCols = 4;
+        BEER_ME_DATA.markers = [];
         if ($('#name').prop('checked')) {
             sortResults(getNameVal, BEER_ME_DATA.breweriesArr);
         } else if ($('#distance').prop('checked')) {
@@ -136,6 +138,7 @@ function resetResults() {
     BEER_ME_DATA.search = '';
     BEER_ME_DATA.breweriesArr = [];
     BEER_ME_DATA.latLng = {};
+    BEER_ME_DATA.markers = [];
     $('.js-results').remove();
     $('#sort-results').remove();
     $('#map').empty();
@@ -257,77 +260,6 @@ function getExtraDetails(breweries, map) {
 
 }
 
-function getDistancesWhileTesting(breweries) {
-
-    for (let i = 0; i < breweries.length; i++) {
-    
-        const DISTANCE_MATRIX_URL = 'http://www.mapquestapi.com/directions/v2/routematrix?key=3Tq7BgL2BLnK1uBtZosI3iLuhoqNDm4G';
-    
-        const params = {
-    
-            locations: [
-                {
-                    latLng: {
-                        lat: parseFloat(BEER_ME_DATA.userCoords.lat),
-                        lng: parseFloat(BEER_ME_DATA.userCoords.lng)
-                    }
-                },
-                {
-                    latLng: {
-                        lat: parseFloat(BEER_ME_DATA.breweriesArr[i].lat),
-                        lng: parseFloat(BEER_ME_DATA.breweriesArr[i].lng)
-                    }
-                }
-            ]
-        };
-    
-        if (BEER_ME_DATA.userCoords === undefined) {
-    
-            BEER_ME_DATA.breweriesArr[i].distance = {
-                value: ' ',
-                text: ' '
-            }
-    
-        } else {
-    
-            $.ajax({
-                type: 'POST',
-                url: DISTANCE_MATRIX_URL,
-                data: JSON.stringify(params),
-                contentType: "application/json",
-                dataType: 'json',
-            })
-            .done(function (response) {
-        
-                if (response.distance && response.distance != undefined) {
-        
-                    BEER_ME_DATA.breweriesArr[i].distance = `${response.distance[1].toFixed(1)} mi`;
-        
-                } else {
-        
-                    BEER_ME_DATA.breweriesArr[i].distance = {
-                        value: ' ',
-                        text: ' '
-                    }
-        
-                }
-            
-            })
-            .fail(function(response) {
-                BEER_ME_DATA.breweriesArr[i].distance = {
-                    value: ' ',
-                    text: ' '
-                }
-        
-            })
-    
-        } 
-        
-        setTimeout(function() {sortResults(getDistanceVal,BEER_ME_DATA.breweriesArr);}, 1500);
-    
-    } 
-}
-
 function getDistanceVal(obj) {
     return obj.distance.value;
 }
@@ -337,7 +269,7 @@ function getNameVal(obj) {
 }
 
 function getRatingVal(obj) {
-    return obj.rating;
+    return obj.ratingObj.value;
 }
 
 function sortResults(propertyRetriever, array, map) {
@@ -376,9 +308,10 @@ function sortResults(propertyRetriever, array, map) {
 
 function renderResults(results, map) {
 
-    $('#next-page').prop('hidden', false);
+    //$('#next-page').prop('hidden', false);
 
     let resultsStr = '';
+    //let ratingStr;
 
     for (let rowNumber = 0; rowNumber < BEER_ME_DATA.numberOfRows; rowNumber++) {
 
@@ -392,7 +325,23 @@ function renderResults(results, map) {
                     text: ' '
                 }
             }
-            
+
+            if (results[i].rating != null) {
+
+                results[i].ratingObj = {
+                    value: results[i].rating,
+                    text: results[i].rating.toString()
+                }
+            } else {
+
+                results[i].rating = 'not available';
+
+            }
+
+            // for (let i = 1; i <= results[i].rating; i++) {
+            //     ratingStr += `<img class='star' src='images/star.png' alt='a star bottle-cap'>`;
+            // }
+    
             resultsStr += `
             <div id='${results[i].distance.value}' class='col-3 card'>
                 <div class='card-body'>
@@ -403,11 +352,13 @@ function renderResults(results, map) {
                     <p class='distance'>${results[i].distance.text}</p>
                     <p class='rating'>Rating: ${results[i].rating}</p>
                     <address class='card-text'>
-                        ${results[i].formatted_address}
+                    ${results[i].formatted_address}
                     </address>
                 </div>
             </div>
             `;
+
+            ratingStr = '';
 
         }
 
@@ -444,34 +395,36 @@ function setMarkers(map) {
 
     let infowindow = new google.maps.InfoWindow();
 
-    let markers = [];
+    if (BEER_ME_DATA.markers.length === 0) {
 
-    for (i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
+        for (i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
+            
+            let breweryLatLng = {lat: BEER_ME_DATA.breweriesArr[i].lat, lng: BEER_ME_DATA.breweriesArr[i].lng};
+
+            let marker = new google.maps.Marker({position: breweryLatLng, icon: image, map: map});
+
+            BEER_ME_DATA.markers.push(marker);
+
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                    let pos = {lat: BEER_ME_DATA.breweriesArr[i].lat,lng: BEER_ME_DATA.breweriesArr[i].lng};
+
+                    infowindow.setContent(`
+                        <div class='marker-window'>
+                        <img class='marker-logo' src='images/sign.png' alt='brewery icon'> 
+                        <a class='marker-title' href='${BEER_ME_DATA.breweriesArr[i].website}' target='_default'>${BEER_ME_DATA.breweriesArr[i].name}</a>
+                        <p>Rating: ${BEER_ME_DATA.breweriesArr[i].rating}<p>
+                        <p>${BEER_ME_DATA.breweriesArr[i].formatted_address}</p>
+                        </div>
+                        `);
+                    infowindow.setPosition(pos);
+                    infowindow.open(map, (marker - 19));
+                }
+            })(marker, i));
         
-        let breweryLatLng = {lat: BEER_ME_DATA.breweriesArr[i].lat, lng: BEER_ME_DATA.breweriesArr[i].lng};
+        }
 
-        let marker = new google.maps.Marker({position: breweryLatLng, icon: image, map: map});
-
-        markers.push(marker);
-
-        google.maps.event.addListener(marker, 'click', (function(marker, i) {
-            return function() {
-                infowindow.setContent(`
-                    <div class='marker-window'>
-                    <img class='marker-logo' src='images/sign.png' alt='brewery icon'> 
-                    <a href='${BEER_ME_DATA.breweriesArr[i].website}' target='_default'>${BEER_ME_DATA.breweriesArr[i].name}</a>
-                    <p>Rating: ${BEER_ME_DATA.breweriesArr[i].rating}
-                    </div>
-                    `);
-                infowindow.setPosition(pos);
-                infowindow.open(map, (marker - 19));
-            }
-        })(marker, i));
-    
     }
-
-    let markerCluster = new MarkerClusterer(map, markers,
-        {imagePath: 'images/m'});
 
 }
 
@@ -755,14 +708,14 @@ function initMap() {
     });
 
     let searchLocation = {lat: BEER_ME_DATA.latLng.lat,lng: BEER_ME_DATA.latLng.lng};
+
+    let searchRadius = BEER_ME_DATA.radius;
     
     let request = {
         query: 'brewery',
         location: searchLocation,
-        radius: BEER_ME_DATA.radius
+        radius: searchRadius
     };
-
-    debugger
 
     service = new google.maps.places.PlacesService(map);
 

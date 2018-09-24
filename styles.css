@@ -142,7 +142,7 @@ button[type='submit']:focus, #next-page:focus {
     margin: 0 auto;
 }
 
-.card-title {
+.card-title, .rating {
     font-size: 14px;
     color: black;
 }
@@ -170,6 +170,12 @@ address, .distance {
 
 .marker-logo {
     margin: 0 auto;
+}
+
+.marker-title {
+    font-size: 16px;
+    color: #FD4A4A;
+    font-weight: bold;
 }
 
 footer {
