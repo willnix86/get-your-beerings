@@ -63,7 +63,6 @@ input[type='text'] {
 input[type='text']:focus, select:focus, .card-title:focus  {
     outline: 3px solid orange;
     outline-offset: -.15em;
-    border-radius: 5px;
 }
 
 select {
@@ -161,8 +160,8 @@ button[type='submit']:focus, #next-page:focus {
     border-radius: 5px;
 }
 
-address, .js-distance {
-    font-size: 13px;
+address, .distance {
+    font-size: 10px;
 }
 
 .marker-window {
