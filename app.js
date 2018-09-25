@@ -43,6 +43,10 @@ function getUserLocation() {
         $('#city').focus();
 
     }, function() {
+
+        BEER_ME_DATA.userCoords.lat = 0;
+        BEER_ME_DATA.userCoords.lng = 0;
+
         $('.lds-default').remove();
         $(`
         <form name='brewery-search' class='brewery-search'>
@@ -147,7 +151,7 @@ function addSearchCoords(searchCoords) {
         lat: parseFloat(searchCoords.lat),
         lng: parseFloat(searchCoords.lon)
     }
-
+   
     initMap();
 }
 
@@ -215,56 +219,44 @@ function getDistances(breweries, map) {
     } 
 
     setTimeout(function() {getExtraDetails(breweries, map)}, 1500);
-
+    
 }
 
 // WORK OUT NOW TO SPLIT ARRAY INTO 2 AND PASS AT 1 SEC INTERVAL
 function getExtraDetails(breweries, map) {
 
-    for (i = 0; i <= 10; i++) {
+    for (let i = 0; i < breweries.length; i++) {
 
-        let index = 0;
+        var request = {
+            placeId: breweries[i].place_id,
+            fields: ['opening_hours', 'website']
+        };
 
-        setTimeout(function() {
+        service.getDetails(request, callback);
+        
+        function callback(place, status) {
 
-            for (let h = 0, j = index; h < 2; h++, j++) {
-
-                var request = {
-                    placeId: breweries[j].place_id,
-                    fields: ['opening_hours', 'website']
-                };
-
-                service.getDetails(request, callback);
-                
-                function callback(place, status) {
-
-                    if (status == google.maps.places.PlacesServiceStatus.OK) {
-                        if (place.website != null) {
-                            BEER_ME_DATA.breweriesArr[j].website = place.website;
-                        } else {
-                            BEER_ME_DATA.breweriesArr[j].website = "https://www.google.com/search?q=" + BEER_ME_DATA.breweriesArr[j].name;
-                        }
-    
-                        if (place.opening_hours != null) {
-                            BEER_ME_DATA.breweriesArr[j].opening_hours = place.opening_hours;
-                        }
-
-                        if (BEER_ME_DATA.breweriesArr[j].rating == 0) {
-                            BEER_ME_DATA.breweriesArr[j].rating = 'N/A';
-                        }
-
-                    } else {
-                        console.log(status);
-                    }
-
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                if (place.website != null) {
+                    BEER_ME_DATA.breweriesArr[i].website = place.website;
+                } else {
+                    BEER_ME_DATA.breweriesArr[i].website = "https://www.google.com/search?q=" + BEER_ME_DATA.breweriesArr[i].name;
                 }
-    
-                index+=2;
 
+                if (place.opening_hours != null) {
+                    BEER_ME_DATA.breweriesArr[i].opening_hours = place.opening_hours;
+                }
+
+                if (BEER_ME_DATA.breweriesArr[i].rating == 0) {
+                    BEER_ME_DATA.breweriesArr[i].rating = 'N/A';
+                }
+
+            } else {
+                console.log(status);
             }
 
-        }, i*1200);
-        
+        }
+
     }
 
     sortResults(getDistanceVal, breweries, map);

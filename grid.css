@@ -30,21 +30,22 @@
   width: 100%;
 }
 
+.card {
+  height: 300px;
+}
+
 /* Tablet defaults */
 @media only screen and (min-width: 640px) {
 
-.col-3, .col-4, .col-6, .col-12 {
-  width: 48%;
-}
-
-.card {
-  margin: 0 1% 50px 1%;
-}
+  .col-3, .col-4, .col-6, .col-12 {
+    width: 48%;
+  }
 
 }
 
 /* Larger screens */
 @media only screen and (min-width: 769px) {
+
   .col-3 {
     width: 24%;
     margin: 0 0.5% 50px 0.5%;
@@ -64,14 +65,12 @@
   .col-12 {
     width: 100%;
   }
-
-  .card {
-    height: 330px
-  }
+  
 }
 
-@media only screen and (min-width: 992px) {
+@media only screen and (min-width: 769px) and (max-width: 920px) {
+  
   .card {
-    height: 300px;
+    height: 330px
   }
 }
