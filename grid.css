@@ -30,11 +30,25 @@
   width: 100%;
 }
 
+.card {
+  height: 300px;
+}
 
-/* Non-mobile, grid */
+/* Tablet defaults */
 @media only screen and (min-width: 640px) {
+
+  .col-3, .col-4, .col-6, .col-12 {
+    width: 48%;
+  }
+
+}
+
+/* Larger screens */
+@media only screen and (min-width: 769px) {
+
   .col-3 {
     width: 24%;
+    margin: 0 0.5% 50px 0.5%;
   }
 
   /* 4 columns */
@@ -50,5 +64,13 @@
   /* 12 columns */
   .col-12 {
     width: 100%;
+  }
+  
+}
+
+@media only screen and (min-width: 769px) and (max-width: 920px) {
+  
+  .card {
+    height: 330px
   }
 }
