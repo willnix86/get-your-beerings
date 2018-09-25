@@ -7,7 +7,8 @@ const BEER_ME_DATA = {
     search: '',
     radius: 8046.7,
     latLng: {},
-    markers: []
+    markers: [],
+    mapStatus: false
 }
 
 function getUserLocation() {
@@ -111,17 +112,34 @@ function watchClicks() {
 function getSearchLatLng (search) {
 
     const url = `https://us1.locationiq.com/v1/search.php?key=pk.70c39f1d416f753085ae36d8245124d4&format=json&q=${search}`
-
+  
     fetch(url)
     .then(response => {
-        if (response.ok) {
+        if (!response.ok) {
+            response.json()
+            .then(function(json) {
+                let error;
+                if (json.error == 'Unable to geocode') {
+                    error = `Sorry, we couldn't find the location you entered. Please check your spelling and try again!`;
+                } else if (json.error == 'Rate Limited Second' || json.error == 'Rate Limited Minute' || json.error == 'Rate Limited Day') {
+                    error = `Sorry, we seem to have hit a snag. Please try again later!`
+                }
+    
+                $(`
+                        <section class='js-alert' role="alert" aria-live='assertive'>
+                            <p>${error}</p>
+                        </section>
+                    `).insertAfter('form');
+                    $('.js-alert').text(`Sorry, we encountered the following error(s): ${err}`);
+    
+            })
+        } else if (response.ok) {
             return response.json();
         }
         throw new Error(response.statusText);
-    })
-    .then(responseJson => addSearchCoords(responseJson[0]))
-    .catch(error => displayError(error))
-    
+        })
+        .then(responseJson => addSearchCoords(responseJson[0]))
+
 }
 
 function addSearchCoords(searchCoords) {
@@ -143,15 +161,6 @@ function resetResults() {
     $('.js-results').remove();
     $('#sort-results').remove();
     $('#map').empty();
-}
-
-function displayError(err) {
-    $(`
-        <section class='js-alert' role="alert" aria-live='assertive'>
-                <p>Sorry, we encountered the following error(s): ${err}</p>
-        </section>
-    `).insertAfter('form');
-    $('.js-alert').text(`Sorry, we encountered the following error(s): ${err}`);
 }
 
 function formatQueryParams(params) {
@@ -209,6 +218,7 @@ function getDistances(breweries, map) {
 
 }
 
+// WORK OUT NOW TO SPLIT ARRAY INTO 2 AND PASS AT 1 SEC INTERVAL
 function getExtraDetails(breweries, map) {
 
     for (i = 0; i <= 10; i++) {
@@ -312,7 +322,6 @@ function renderResults(results, map) {
     //$('#next-page').prop('hidden', false);
 
     let resultsStr = '';
-    //let ratingStr;
 
     for (let rowNumber = 0; rowNumber < BEER_ME_DATA.numberOfRows; rowNumber++) {
 
@@ -351,10 +360,10 @@ function renderResults(results, map) {
                     </div>
                     <a class='brewery-name card-title' href='http://www.google.com/search?q=${BEER_ME_DATA.breweriesArr[i].name}' target="_default">${results[i].name}</a> 
                     <p class='distance'>${results[i].distance.text}</p>
-                    <p class='rating'>Rating: ${results[i].rating}</p>
                     <address class='card-text'>
                     ${results[i].formatted_address}
                     </address>
+                    <p class='rating'>Rating: ${results[i].rating}</p>
                 </div>
             </div>
             `;
@@ -369,17 +378,12 @@ function renderResults(results, map) {
         
         BEER_ME_DATA.arrayIndex += 4;
 
-        // if (BEER_ME_DATA.arrayIndex >= (results.length - 2)) {
-        //     numberOfRows = 1;
-        //     numberOfCols = 2;
-        // }
+    }
 
-        // if (BEER_ME_DATA.arrayIndex >= results.length) {
-        //     $('#next-page').prop('hidden', true);
-        // }
-
+    if (BEER_ME_DATA.mapStatus === false) {
         setMarkers(map);
-
+    } else {
+        resetMap();
     }
 
 };
@@ -422,7 +426,12 @@ function setMarkers(map) {
                     infowindow.open(map, (marker - 19));
                 }
             })(marker, i));
-        
+
+            google.maps.event.addListener(map, 'click', (function() {
+                    infowindow.close();
+                })
+            );
+            
         }
 
     }
@@ -430,6 +439,8 @@ function setMarkers(map) {
 }
 
 function initMap() {
+
+    BEER_ME_DATA.mapStatus = true;
 
     let map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: BEER_ME_DATA.latLng.lat, lng: BEER_ME_DATA.latLng.lng},
@@ -757,6 +768,345 @@ function initMap() {
     //         </form>
     //     `).insertAfter('#map');
     // };
+
+}
+
+function resetMap() {
+    let map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: BEER_ME_DATA.latLng.lat, lng: BEER_ME_DATA.latLng.lng},
+        zoom: 11,
+        styles: [
+                    {
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#ebe3cd"
+                        }
+                    ]
+                    },
+                    {
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#523735"
+                        }
+                    ]
+                    },
+                    {
+                    "elementType": "labels.text.stroke",
+                    "stylers": [
+                        {
+                        "color": "#f5f1e6"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#c9b2a6"
+                        },
+                        {
+                        "saturation": -40
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#dcd2be"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "administrative.land_parcel",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#ae9e90"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "landscape.natural",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi",
+                    "elementType": "labels.text",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#93817c"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi.business",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi.park",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                        "color": "#a5b076"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "poi.park",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#447530"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#f5f1e6"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.arterial",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#fdfcf8"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#f8c967"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#f9c833"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway.controlled_access",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#e98d58"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.highway.controlled_access",
+                    "elementType": "geometry.stroke",
+                    "stylers": [
+                        {
+                        "color": "#fe9850"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.local",
+                    "elementType": "labels",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "road.local",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#806b63"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit",
+                    "stylers": [
+                        {
+                        "visibility": "off"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.line",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.line",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#8f7d77"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.line",
+                    "elementType": "labels.text.stroke",
+                    "stylers": [
+                        {
+                        "color": "#ebe3cd"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "transit.station",
+                    "elementType": "geometry",
+                    "stylers": [
+                        {
+                        "color": "#dfd2ae"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "water",
+                    "elementType": "geometry.fill",
+                    "stylers": [
+                        {
+                        "color": "#b9d3c2"
+                        }
+                    ]
+                    },
+                    {
+                    "featureType": "water",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                        "color": "#92998d"
+                        }
+                    ]
+                    }
+                ],
+        disableDefaultUI: true,
+        zoomControl: true
+    });
+
+    let image = {
+        url: 'http://devnx.io/beer-me/images/marker.png',
+        size: new google.maps.Size(60, 60),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(15, 21),
+        scaledSize: new google.maps.Size(30, 30),
+    } 
+
+    let infowindow = new google.maps.InfoWindow();
+
+    if (BEER_ME_DATA.markers.length === 0) {
+
+        for (i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
+            
+            let breweryLatLng = {lat: BEER_ME_DATA.breweriesArr[i].lat, lng: BEER_ME_DATA.breweriesArr[i].lng};
+
+            let marker = new google.maps.Marker({position: breweryLatLng, icon: image, map: map});
+
+            BEER_ME_DATA.markers.push(marker);
+
+            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                return function() {
+                    let pos = {lat: BEER_ME_DATA.breweriesArr[i].lat,lng: BEER_ME_DATA.breweriesArr[i].lng};
+
+                    infowindow.setContent(`
+                        <div class='marker-window'>
+                        <img class='marker-logo' src='images/sign.png' alt='brewery icon'> 
+                        <a class='marker-title' href='http://www.google.com/search?q=${BEER_ME_DATA.breweriesArr[i].name}' target='_default'>${BEER_ME_DATA.breweriesArr[i].name}</a>
+                        <p>Rating: ${BEER_ME_DATA.breweriesArr[i].rating}<p>
+                        <p>${BEER_ME_DATA.breweriesArr[i].formatted_address}</p>
+                        </div>
+                        `);
+                    infowindow.setPosition(pos);
+                    infowindow.open(map, (marker - 19));
+                }
+            })(marker, i));
+
+            google.maps.event.addListener(map, 'click', (function() {
+                    infowindow.close();
+                })
+            );
+            
+        }
+
+    }
+
+    if ($('#sort-results').length == 0) {
+        $(`
+            <form name='sort-results' id='sort-results'>
+                <fieldset>
+                    <legend>Sort results</legend>
+                    <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
+                    <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
+                    <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
+                </fieldset>
+            </form>
+        `).insertAfter('#map');
+    };
 
 }
 

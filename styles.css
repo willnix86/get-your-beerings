@@ -112,6 +112,15 @@ button[type='submit']:focus, #next-page:focus {
     margin-bottom: 50px;
 }
 
+.marker-window {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.marker-title {
+    word-wrap: break-word;
+}
+
 .marker-logo {
     height: 50px;
     width: 50px;
@@ -124,10 +133,10 @@ button[type='submit']:focus, #next-page:focus {
 
 .card {
     margin-bottom: 50px;
-    padding: 15px 10px;
-    height: 280px;
-    margin: 0 0.5% 50px 0.5%;
-    background-color: #f9c902;
+    padding: 20px 0px;
+    background-color: #ffcc00;
+    color: black;
+    border-radius: 10px;
     box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.0);
     transition: 0.15s ease-in-out;
 }
@@ -147,8 +156,8 @@ button[type='submit']:focus, #next-page:focus {
     margin: 0 auto;
 }
 
-.card-title, .rating {
-    font-size: 14px;
+.card-title {
+    font-size: 17px;
     color: black;
 }
 
@@ -165,8 +174,13 @@ button[type='submit']:focus, #next-page:focus {
     border-radius: 5px;
 }
 
+.rating {
+    font-size: 15px;
+    width: 100%;
+}
+
 address, .distance {
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .marker-window {
