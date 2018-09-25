@@ -112,6 +112,10 @@ button[type='submit']:focus, #next-page:focus {
     margin-bottom: 50px;
 }
 
+.more-info {
+    font-size: 12px;
+}
+
 .marker-window {
     width: 70%;
     margin: 0 auto;
@@ -133,12 +137,13 @@ button[type='submit']:focus, #next-page:focus {
 
 .card {
     margin-bottom: 50px;
-    padding: 20px 0px;
-    background-color: #ffcc00;
+    padding: 20px 10px;
+    background-color: #FFE193;
     color: black;
     border-radius: 10px;
     box-shadow: 0px 0px 0px 0px rgba(0,0,0,0.0);
     transition: 0.15s ease-in-out;
+    cursor: pointer;
 }
 
 .card:hover {
@@ -158,15 +163,26 @@ button[type='submit']:focus, #next-page:focus {
 
 .card-title {
     font-size: 17px;
-    color: black;
+    color:#FD4A4A;
+    font-weight: bold;
 }
 
-.card-title:hover {
-    color:#FD4A4A;
+.brewery-name {
+    font-size: 17px;
+    color:#5C483D;
+    font-weight: bold;
+}
+
+.hours-title {
+    font-size: 15px;
+}
+
+.card-title:hover, .card-title:visited:hover {
+    color:#5C483D;
 }
 
 .card-title:visited {
-    color: #FD4A4A;
+    color:#FF9751;
 }
 
 .card-title:focus  {
@@ -210,7 +226,6 @@ footer > p {
     display: inline-block;
     font-size: 5px;
 }
-
 
 /*                 */
 /* LOADING SPINNER */
