@@ -491,10 +491,31 @@ function setMarkers(map) {
         var markerCluster = new MarkerClusterer(map, BEER_ME_DATA.markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
+      
+      $('.lds-default').remove();
+      $('#map').show();
+
+      if ($('#sort-results').length == 0) {
+        $(`
+            <form name='sort-results' id='sort-results'>
+                <fieldset>
+                    <legend>Sort results</legend>
+                    <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
+                    <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
+                    <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
+                </fieldset>
+                <p class='more-info'>Click a card for more info</p>
+            </form>
+        `).insertAfter('#map');
+    };
+
 
     }
 
 function initMap() {
+    
+    $('#map').hide();
+    loadingScreen();
 
     BEER_ME_DATA.mapStatus = true;
 
@@ -808,23 +829,10 @@ function initMap() {
         }
     }
 
-    if ($('#sort-results').length == 0) {
-        $(`
-            <form name='sort-results' id='sort-results'>
-                <fieldset>
-                    <legend>Sort results</legend>
-                    <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
-                    <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
-                    <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
-                </fieldset>
-                <p class='more-info'>Click a card for more info</p>
-            </form>
-        `).insertAfter('#map');
-    };
-
 }
 
 function resetMap() {
+
     let map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: BEER_ME_DATA.latLng.lat, lng: BEER_ME_DATA.latLng.lng},
         zoom: 12,
