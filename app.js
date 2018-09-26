@@ -117,7 +117,7 @@ function watchClicks() {
 
     $('main').on('click', '.card', function(e) {
         let index = $(this).attr('id');
-        let place_id =$(this).find('span').attr('id');
+        let place_id = $(this).find('span').attr('id');
         checkCardFace(index, place_id)
     });
 
@@ -263,7 +263,7 @@ function getExtraDetails(index, brewery) {
             fields: ['opening_hours', 'website']
         };
 
-        let service = new google.maps.places.PlacesService(map);
+        let service = new google.maps.places.PlacesService(BEER_ME_DATA.map);
 
         service.getDetails(request, callback);
         
@@ -801,6 +801,8 @@ function initMap() {
         zoomControl: true
     });
 
+    BEER_ME_DATA.map = map;
+
     let searchLocation = {lat: BEER_ME_DATA.latLng.lat,lng: BEER_ME_DATA.latLng.lng};
 
     let searchRadius = BEER_ME_DATA.radius;
@@ -1107,6 +1109,8 @@ function resetMap() {
         disableDefaultUI: true,
         zoomControl: true
     });
+
+    BEER_ME_DATA.map = map;
 
     setMarkers(map);
 
