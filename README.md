@@ -29,7 +29,7 @@ Screenshots
 
 
 ### Mobile
-![Screenshot of the 'Get Your Beerings' Mobile Front Page](/images/front-mob.png)
+![Screenshot of the 'Get Your Beerings' Mobile Front Page](/images/front-page-mob.png)
 
 ![Screenshot of the 'Get Your Beerings' Mobile Map](/images/map-mob.png)
 
