@@ -383,11 +383,11 @@ function renderResults(results, map) {
                 let ratingDec = parseInt(ratingArr[1]);
 
                 for (let j = 1; j <= ratingWhole; j++) {
-                    ratingStrFinal += `<img class='star' src='images/star.png' alt='a star bottle-cap'>`;
+                    ratingStrFinal += `<img class='star' src='images/star.png' alt='rating image'>`;
                 }
 
                 if (ratingDec > 0 || !isNaN(ratingDec)) {
-                    ratingStrFinal += `<img class='star' src='images/star-${ratingDec}.png'>`;
+                    ratingStrFinal += `<img class='star' src='images/star-${ratingDec}.png' alt='rating image'>`;
                 }
                 
 
@@ -403,7 +403,7 @@ function renderResults(results, map) {
             }
     
             resultsStr += `
-            <div id='${i}' class='col-3 card'>
+            <div id='${i}' class='col-3 card' role='article'>
                 <span id='${results[i].place_id}' class='hidden'></span>
                 <div class='card-body front'>
                     <div class='card-logo__wrapper'>
