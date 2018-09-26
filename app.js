@@ -428,7 +428,7 @@ function renderResults(results, map) {
 function setMarkers(map) {
 
     let image = {
-        url: 'http://devnx.io/beerings/images/marker.png',
+        url: 'https://devnx.io/beerings/images/marker.png',
         size: new google.maps.Size(60, 60),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(15, 21),
@@ -1075,7 +1075,7 @@ function resetMap() {
     });
 
     let image = {
-        url: 'http://devnx.io/beerings/images/marker.png',
+        url: 'https://devnx.io/beerings/images/marker.png',
         size: new google.maps.Size(60, 60),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(15, 21),
