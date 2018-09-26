@@ -281,7 +281,9 @@ function getExtraDetails(index, brewery) {
                     hours = hoursArr.join('<br>');
 
                 } else {
-                    hours = BEER_ME_DATA.breweriesArr[index].formatted_address;
+
+                    hours = `For our hours of business, please check the ${BEER_ME_DATA.breweriesArr[index].name} website.`;
+                    
                 }
 
                 if (BEER_ME_DATA.breweriesArr[index].rating == 0) {
@@ -447,6 +449,7 @@ function setMarkers(map) {
 
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
                 return function() {
+
                     let pos = {lat: BEER_ME_DATA.breweriesArr[i].lat,lng: BEER_ME_DATA.breweriesArr[i].lng};
 
                     infowindow.setContent(`
