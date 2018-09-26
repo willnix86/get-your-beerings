@@ -31,7 +31,7 @@
 }
 
 .card {
-  height: 300px;
+  height: 340px;
 }
 
 /* Tablet defaults */
@@ -39,6 +39,11 @@
 
   .col-3, .col-4, .col-6, .col-12 {
     width: 48%;
+    margin: 0 1% 50px 1%;
+  }
+
+  .card {
+    height: 340px;
   }
 
 }
@@ -68,9 +73,17 @@
   
 }
 
-@media only screen and (min-width: 769px) and (max-width: 920px) {
+@media only screen and (min-width: 769px) and (max-width: 1031px) {
   
   .card {
-    height: 330px
+    height: 390px
   }
+}
+
+@media only screen and (min-width: 1032px) {
+
+  .card {
+    height: 350px;
+  }
+
 }

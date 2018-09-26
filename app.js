@@ -5,7 +5,7 @@ const BEER_ME_DATA = {
     numberOfRows: 5,
     numberOfCols: 4,
     search: '',
-    radius: 8046.7,
+    radius: 3218.69,
     latLng: {},
     markers: [],
     mapStatus: false
@@ -21,15 +21,16 @@ function getUserLocation() {
 
         $('.lds-default').remove();
         $(`
-        <form name='brewery-search' class='brewery-search'>
+        <form name='brewery-search' class='brewery-search' autocomplete='off'>
             <fieldset>
                 <legend>Enter Location</legend>
-                <p class='legend-sub'>Search by City, State, or Post-Code</p>
+                <p class='legend-sub'>Search by City, State, or Post Code</p>
 
                 <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London, MK45 4EP"></label>
 
                 <label for='radius'>Search within:</label>
                 <select form='brewery-search' name='radius' id='radius'>
+                    <option value='2'>2 miles</option>
                     <option value='5'>5 miles</option>
                     <option value='10'>10 miles</option>
                     <option value='20'>20 miles</option>
@@ -40,7 +41,6 @@ function getUserLocation() {
             </fieldset>
         </form>
         `).insertAfter('header');
-        $('#city').focus();
 
     }, function() {
 
@@ -67,12 +67,12 @@ function getUserLocation() {
             </fieldset>
         </form>
 
-        <section class='js-alert' role="alert" aria-live='assertive'>
-            <p>Geolocation is currently unavailable. You can still search for breweries, but we can't tell you how close they are.</p>
+        <section class='js-alert' role="alert">
+            <p>Geolocation is currently unavailable. You can still search for breweries, but we'll be unable tell you how close they are.</p>
         </section>
-
         `).insertAfter('header');
-        $('#city').focus();
+
+        $('.aria-alert').append(`<p>Geolocation is currently unavailable. You can still search for breweries, but we'll be unable tell you how close they are.</p>`)
 
     }, {timeout:10000})
     
@@ -111,12 +111,18 @@ function watchClicks() {
         }
     });
 
+    $('main').on('click', '.card', function(e) {
+        let index = $(this).attr('id');
+        let place_id =$(this).find('span').attr('id');
+        checkCardFace(index, place_id)
+    });
+
 }
 
 function getSearchLatLng (search) {
 
     const url = `https://us1.locationiq.com/v1/search.php?key=pk.70c39f1d416f753085ae36d8245124d4&format=json&q=${search}`
-  
+
     fetch(url)
     .then(response => {
         if (!response.ok) {
@@ -134,8 +140,7 @@ function getSearchLatLng (search) {
                             <p>${error}</p>
                         </section>
                     `).insertAfter('form');
-                    $('.js-alert').text(`Sorry, we encountered the following error(s): ${err}`);
-    
+                $('.aria-alert').append(`<p>${error}</p>`);
             })
         } else if (response.ok) {
             return response.json();
@@ -163,6 +168,7 @@ function resetResults() {
     BEER_ME_DATA.latLng = {};
     BEER_ME_DATA.markers = [];
     $('.js-results').remove();
+    $('.js-alert').remove();
     $('#sort-results').remove();
     $('#map').empty();
 }
@@ -218,17 +224,37 @@ function getDistances(breweries, map) {
 
     } 
 
-    setTimeout(function() {getExtraDetails(breweries, map)}, 1500);
+    setTimeout(function() {sortResults(getDistanceVal, breweries, map)}, 1500);
     
 }
 
-// WORK OUT NOW TO SPLIT ARRAY INTO 2 AND PASS AT 1 SEC INTERVAL
-function getExtraDetails(breweries, map) {
+function checkCardFace(index, place_id){
 
-    for (let i = 0; i < breweries.length; i++) {
+    if ($(`#${index}`).children().hasClass('back')) {
+        $(`#${index}`).html(`
+                <span id='${BEER_ME_DATA.breweriesArr[index].place_id}' class='hidden'></span>
+                <div class='card-body front'>
+                    <div class='card-logo__wrapper'>
+                        <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
+                    </div>
+                    <a class='card-title' href='${BEER_ME_DATA.breweriesArr[index].website}' target='_default'>${BEER_ME_DATA.breweriesArr[index].name}</a>
+                    <p class='distance'>${BEER_ME_DATA.breweriesArr[index].distance.text}</p>
+                    <address class='card-text'>
+                    ${BEER_ME_DATA.breweriesArr[index].formatted_address}
+                    </address>
+                    <p class='rating'>Rating: ${BEER_ME_DATA.breweriesArr[index].ratingObj.text}</p>
+                </div>
+            </div>
+        `);
+        } else {
+            getExtraDetails(index, place_id);
+        }
+    };
+
+function getExtraDetails(index, brewery) {
 
         var request = {
-            placeId: breweries[i].place_id,
+            placeId: brewery,
             fields: ['opening_hours', 'website']
         };
 
@@ -236,32 +262,49 @@ function getExtraDetails(breweries, map) {
         
         function callback(place, status) {
 
+            let hoursArr;
+            let hours;
+
             if (status == google.maps.places.PlacesServiceStatus.OK) {
                 if (place.website != null) {
-                    BEER_ME_DATA.breweriesArr[i].website = place.website;
+                    BEER_ME_DATA.breweriesArr[index].website = place.website;
                 } else {
-                    BEER_ME_DATA.breweriesArr[i].website = "https://www.google.com/search?q=" + BEER_ME_DATA.breweriesArr[i].name;
+                    BEER_ME_DATA.breweriesArr[index].website = "https://www.google.com/search?q=" + BEER_ME_DATA.breweriesArr[index].name;
                 }
 
                 if (place.opening_hours != null) {
-                    BEER_ME_DATA.breweriesArr[i].opening_hours = place.opening_hours;
+                    
+                    BEER_ME_DATA.breweriesArr[index].opening_hours = place.opening_hours;
+
+                    hoursArr = BEER_ME_DATA.breweriesArr[index].opening_hours.weekday_text;
+                    
+                    hours = hoursArr.join('<br>');
+
+                } else {
+
+                    hours = `For our opening times, please check out our website.`;
+                    
                 }
 
-                if (BEER_ME_DATA.breweriesArr[i].rating == 0) {
-                    BEER_ME_DATA.breweriesArr[i].rating = 'N/A';
+                if (BEER_ME_DATA.breweriesArr[index].rating == 0) {
+                    BEER_ME_DATA.breweriesArr[index].rating = 'N/A';
                 }
 
+                $(`#${index}`).html(`
+                    <div class='card-body back'>
+                        <a class='card-title' href='${BEER_ME_DATA.breweriesArr[index].website}' target='_default'>${BEER_ME_DATA.breweriesArr[index].name}</a>
+                        <p class='hours-title'>Opening Hours</p>
+                        <address class='card-text hours'>
+                        ${hours}
+                        </address>
+                    </div>
+                `);
             } else {
                 console.log(status);
             }
-
-        }
-
     }
 
-    sortResults(getDistanceVal, breweries, map);
-
-}
+}      
 
 function getDistanceVal(obj) {
     return obj.distance.value;
@@ -314,12 +357,16 @@ function renderResults(results, map) {
     //$('#next-page').prop('hidden', false);
 
     let resultsStr = '';
+    let ratingStrFinal = '';
 
     for (let rowNumber = 0; rowNumber < BEER_ME_DATA.numberOfRows; rowNumber++) {
 
-        resultsStr = `<div class='js-results row' aria-live='polite'>`;
+        resultsStr = `<div class='js-results row'>`;
 
         for (let columnNumber = 0, i = BEER_ME_DATA.arrayIndex; columnNumber < BEER_ME_DATA.numberOfCols; columnNumber++, i++) {
+
+            let addArr = results[i].formatted_address.split(",");
+            let address = addArr.join('<br>');
 
             if (results[i].distance.value == null || results[i].distance.text == null) {
                 results[i].distance = {
@@ -330,37 +377,49 @@ function renderResults(results, map) {
 
             if (results[i].rating != null) {
 
+                let ratingToStr = results[i].rating.toString();
+                let ratingArr = ratingToStr.split('.');
+                let ratingWhole = parseInt(ratingArr[0]);
+                let ratingDec = parseInt(ratingArr[1]);
+
+                for (let j = 1; j <= ratingWhole; j++) {
+                    ratingStrFinal += `<img class='star' src='images/star.png' alt='a star bottle-cap'>`;
+                }
+
+                if (ratingDec > 0 || !isNaN(ratingDec)) {
+                    ratingStrFinal += `<img class='star' src='images/star-${ratingDec}.png'>`;
+                }
+                
+
                 results[i].ratingObj = {
                     value: results[i].rating,
                     text: results[i].rating.toString()
-                }
-            } else {
+                } 
+            
+            }  else {
 
-                results[i].rating = 'not available';
+                results[i].ratingObj.text = 'N/A';
 
             }
-
-            // for (let i = 1; i <= results[i].rating; i++) {
-            //     ratingStr += `<img class='star' src='images/star.png' alt='a star bottle-cap'>`;
-            // }
     
             resultsStr += `
-            <div id='${results[i].distance.value}' class='col-3 card'>
-                <div class='card-body'>
+            <div id='${i}' class='col-3 card'>
+                <span id='${results[i].place_id}' class='hidden'></span>
+                <div class='card-body front'>
                     <div class='card-logo__wrapper'>
                         <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
                     </div>
-                    <a class='brewery-name card-title' href='http://www.google.com/search?q=${BEER_ME_DATA.breweriesArr[i].name}' target="_default">${results[i].name}</a> 
+                    <p class='brewery-name'>${results[i].name}</p>
                     <p class='distance'>${results[i].distance.text}</p>
                     <address class='card-text'>
-                    ${results[i].formatted_address}
+                    ${address}
                     </address>
-                    <p class='rating'>Rating: ${results[i].rating}</p>
+                    <div class='rating'>${ratingStrFinal}</div>
                 </div>
             </div>
             `;
 
-            ratingStr = '';
+            ratingStrFinal = '';
 
         }
 
@@ -378,12 +437,14 @@ function renderResults(results, map) {
         resetMap();
     }
 
+    $('.aria-alert').append(`<p>Your search returned ${BEER_ME_DATA.breweriesArr.length} results. Below you'll find a map displaying each result. Beneath the map are a series of cards with more information about each of your results.</p>`);
+
 };
 
 function setMarkers(map) {
 
     let image = {
-        url: 'http://devnx.io/beer-me/images/marker.png',
+        url: 'https://devnx.io/beerings/images/marker.png',
         size: new google.maps.Size(60, 60),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(15, 21),
@@ -403,14 +464,15 @@ function setMarkers(map) {
             BEER_ME_DATA.markers.push(marker);
 
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
+
                 return function() {
                     let pos = {lat: BEER_ME_DATA.breweriesArr[i].lat,lng: BEER_ME_DATA.breweriesArr[i].lng};
 
                     infowindow.setContent(`
                         <div class='marker-window'>
                         <img class='marker-logo' src='images/sign.png' alt='brewery icon'> 
-                        <a class='marker-title' href='http://www.google.com/search?q=${BEER_ME_DATA.breweriesArr[i].name}' target='_default'>${BEER_ME_DATA.breweriesArr[i].name}</a>
-                        <p>Rating: ${BEER_ME_DATA.breweriesArr[i].rating}<p>
+                        <p class='marker-title'>${BEER_ME_DATA.breweriesArr[i].name}</p>
+                        <p>Rating: ${BEER_ME_DATA.breweriesArr[i].ratingObj.text}<p>
                         <p>${BEER_ME_DATA.breweriesArr[i].formatted_address}</p>
                         </div>
                         `);
@@ -426,17 +488,40 @@ function setMarkers(map) {
             
         }
 
+        var markerCluster = new MarkerClusterer(map, BEER_ME_DATA.markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      }
+      
+      $('.lds-default').remove();
+      $('#map').show();
+
+      if ($('#sort-results').length == 0) {
+        $(`
+            <form name='sort-results' id='sort-results'>
+                <fieldset>
+                    <legend>Sort results</legend>
+                    <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
+                    <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
+                    <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
+                </fieldset>
+                <p class='more-info'>Click a card for more info</p>
+            </form>
+        `).insertAfter('#map');
+    };
+
+
     }
 
-}
-
 function initMap() {
+    
+    $('#map').hide();
+    loadingScreen();
 
     BEER_ME_DATA.mapStatus = true;
 
     let map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: BEER_ME_DATA.latLng.lat, lng: BEER_ME_DATA.latLng.lng},
-        zoom: 11,
+        zoom: 12,
         styles: [
                     {
                     "elementType": "geometry",
@@ -732,7 +817,7 @@ function initMap() {
 
     service.textSearch(request, callback);
 
-    function callback(results, status, pagination) {
+    function callback(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
             for (var i = 0; i < results.length; i++) {
                 BEER_ME_DATA.breweriesArr.push(results[i]);  
@@ -740,33 +825,17 @@ function initMap() {
                 BEER_ME_DATA.breweriesArr[i].lng = results[i].geometry.location.lng();
                 }
 
-            moreButton.disabled = !pagination.hasNextPage;
-            getNextPage = pagination.hasNextPage && function() {
-                pagination.nextPage();
-            };
             getDistances(BEER_ME_DATA.breweriesArr, map);
         }
     }
 
-    // if ($('#sort-results').length == 0) {
-    //     $(`
-    //         <form name='sort-results' id='sort-results'>
-    //             <fieldset>
-    //                 <legend>Sort results</legend>
-    //                 <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
-    //                 <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
-    //                 <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
-    //             </fieldset>
-    //         </form>
-    //     `).insertAfter('#map');
-    // };
-
 }
 
 function resetMap() {
+
     let map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: BEER_ME_DATA.latLng.lat, lng: BEER_ME_DATA.latLng.lng},
-        zoom: 11,
+        zoom: 12,
         styles: [
                     {
                     "elementType": "geometry",
@@ -1041,64 +1110,7 @@ function resetMap() {
         zoomControl: true
     });
 
-    let image = {
-        url: 'http://devnx.io/beer-me/images/marker.png',
-        size: new google.maps.Size(60, 60),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(15, 21),
-        scaledSize: new google.maps.Size(30, 30),
-    } 
-
-    let infowindow = new google.maps.InfoWindow();
-
-    if (BEER_ME_DATA.markers.length === 0) {
-
-        for (i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
-            
-            let breweryLatLng = {lat: BEER_ME_DATA.breweriesArr[i].lat, lng: BEER_ME_DATA.breweriesArr[i].lng};
-
-            let marker = new google.maps.Marker({position: breweryLatLng, icon: image, map: map});
-
-            BEER_ME_DATA.markers.push(marker);
-
-            google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                return function() {
-                    let pos = {lat: BEER_ME_DATA.breweriesArr[i].lat,lng: BEER_ME_DATA.breweriesArr[i].lng};
-
-                    infowindow.setContent(`
-                        <div class='marker-window'>
-                        <img class='marker-logo' src='images/sign.png' alt='brewery icon'> 
-                        <a class='marker-title' href='http://www.google.com/search?q=${BEER_ME_DATA.breweriesArr[i].name}' target='_default'>${BEER_ME_DATA.breweriesArr[i].name}</a>
-                        <p>Rating: ${BEER_ME_DATA.breweriesArr[i].rating}<p>
-                        <p>${BEER_ME_DATA.breweriesArr[i].formatted_address}</p>
-                        </div>
-                        `);
-                    infowindow.setPosition(pos);
-                    infowindow.open(map, (marker - 19));
-                }
-            })(marker, i));
-
-            google.maps.event.addListener(map, 'click', (function() {
-                    infowindow.close();
-                })
-            );
-            
-        }
-
-    }
-
-    if ($('#sort-results').length == 0) {
-        $(`
-            <form name='sort-results' id='sort-results'>
-                <fieldset>
-                    <legend>Sort results</legend>
-                    <label for='name'><input class='sort-target' type='radio' name='sort' id='name' value='sort'>By Name</label>
-                    <label for='distance'><input class='sort-target' type='radio' name='sort' id='distance' value='sort' checked>By Distance</label>
-                    <label for='rating'><input class='sort-target' type='radio' name='sort' id='rating' value='sort'>By Rating</label>
-                </fieldset>
-            </form>
-        `).insertAfter('#map');
-    };
+    setMarkers(map);
 
 }
 
