@@ -18,10 +18,11 @@
         <h1>Get Your Beerings!</h1>
         <p>Find breweries, pubs, and beer gardens near you</p>
     </header>
+    <div class='aria-alert sr-only' aria-live='assertive'></div>
     
-    <main role="main">
+    <main role="main" aria-live="off">
         <div id="map"></div>
-        <nav role='navigation' aria-live="polite" class="js-pagination">
+        <nav role='navigation' class="js-pagination">
             <label for='see-results'><button id='see-results' hidden>See Results</button></label>
             <label for="prev-page"><button id="prev-page" hidden>Previous Page</button></label>
             <label for="next-page"><button id="next-page" hidden>Next Page</button></label>
@@ -35,6 +36,7 @@
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBC767wPk3dq2i5FRXYaqoBjc4JakUICA&libraries=places"></script>
+    <script src='markerclusterer.js'></script>
     <script src="app.js"></script>
 </body>
 </html>

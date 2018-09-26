@@ -31,7 +31,7 @@
 }
 
 .card {
-  height: 330px;
+  height: 340px;
 }
 
 /* Tablet defaults */
@@ -76,7 +76,7 @@
 @media only screen and (min-width: 769px) and (max-width: 1031px) {
   
   .card {
-    height: 380px
+    height: 390px
   }
 }
 
