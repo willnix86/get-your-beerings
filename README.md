@@ -21,19 +21,19 @@ Screenshots
 -----------
 
 ### Desktop
-![Screenshot of the 'Get Your Beerings' Front Page][gybfront]
+![Screenshot of the 'Get Your Beerings' Front Page](/images/front-page.png)
 
-![Screenshot of the 'Get Your Beerings' Map][gybmap]
+![Screenshot of the 'Get Your Beerings' Map](/images/map.png)
 
-![Screenshot of the 'Get Your Beerings' Result Cards][gybcards]
+![Screenshot of the 'Get Your Beerings' Result Cards](/images/results.png)
 
 
 ### Mobile
-![Screenshot of the 'Get Your Beerings' Mobile Front Page][gybfront-mob]
+![Screenshot of the 'Get Your Beerings' Mobile Front Page](/images/front-mob.png)
 
-![Screenshot of the 'Get Your Beerings' Mobile Map][gybmap-mob]
+![Screenshot of the 'Get Your Beerings' Mobile Map](/images/map-mob.png)
 
-![Screenshot of the 'Get Your Beerings' Mobile Result Cards][gybcards-mob]
+![Screenshot of the 'Get Your Beerings' Mobile Result Cards](/images/results-mob.png)
 
 
 Built with:
@@ -57,14 +57,4 @@ APIs used:
 Author
 ------
 
-[Will Nixon] [devnx]
-
-
-
-[gybfront]: /images/front-page.png
-[gybmap]: /images/map.png
-[gybcards] /images/results.png
-[gybfront-mob]: /images/front-page-mob.png
-[gybmap-mob]: /images/map-mob.png
-[gybcards-mob]: /images/results-mob.png
-[devnx]: https://www.devnx.io
+[Will Nixon](https://www.devnx.io)
