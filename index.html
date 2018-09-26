@@ -1,42 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Get Your Beerings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- <link rel='stylesheet' type='text/css' href='reset.css' /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="reset.css" /> -->
     <link href="https://fonts.googleapis.com/css?family=Cherry+Swash|Open+Sans" rel="stylesheet">
-    <link rel='stylesheet' type='text/css' href='grid.css' />
+    <link rel="stylesheet" type="text/css" href="grid.css" />
     <link rel="stylesheet" type="text/css" href="styles.css" />
     
 </head>
 <body>
     
     <header role="banner">
-        <img class='logo' src='images/beerme.png' alt='beer me logo'>
+        <img class="logo" src="images/beerme.png">
         <h1>Get Your Beerings!</h1>
         <p>Find breweries, pubs, and beer gardens near you</p>
     </header>
-    <div class='aria-alert sr-only' aria-live='assertive' aria-atomic='true'></div>
+    <div class="aria-alert sr-only"role="region" aria-live="assertive" aria-atomic="true" aria-label="alert box"></div>
     
-    <main role="main" aria-live="polite">
-        <div id="map"></div>
-        <nav role='navigation' class="js-pagination">
-            <label for='see-results'><button id='see-results' hidden>See Results</button></label>
-            <label for="prev-page"><button id="prev-page" hidden>Previous Page</button></label>
-            <label for="next-page"><button id="next-page" hidden>Next Page</button></label>
-        </nav>
+    <main role="main" aria-live="off">
+        <h2 class="results-title">RESULTS PAGE</h2>
+        <section id="map"></section>
+        <div class="js-results-end"></div>
     </main>
 
-    <footer>
+    <footer role="contentinfo">
             <p>&copy 2018 - Will Nixon</p>
-            <div class='credits'>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+            <p class="credits">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="https://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></p>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBC767wPk3dq2i5FRXYaqoBjc4JakUICA&libraries=places"></script>
-    <script src='markerclusterer.js'></script>
+    <script src="markerclusterer.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

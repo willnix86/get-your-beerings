@@ -80,27 +80,19 @@ select {
     margin-bottom: 20px;
 }
 
-#next-page {
-    border: none;
-    box-shadow: none;
-    border-radius: 5px;
-    font-size: 15px;
-    margin: 0 auto;
-}
-
-button[type='submit'], #next-page {
+button[type='submit'] {
     background-color: #FE9850;
     height: 35px;
     width: 100px;
     font-weight: bold;
 }
 
-button[type='submit']:hover, #next-page:hover {
+button[type='submit']:hover {
     background-color: #fca46a;
     cursor: pointer;
 }
 
-button[type='submit']:focus, #next-page:focus {
+button[type='submit']:focus {
     outline: 2px solid #FFE293;
     outline-offset: -.15em;
     border-radius: 5px;
@@ -112,6 +104,10 @@ button[type='submit']:focus, #next-page:focus {
     width: 1px;
     height: 1px;
     overflow: hidden;
+}
+
+.results-title {
+    visibility: hidden;
 }
 
 #map {

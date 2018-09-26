@@ -1,3 +1,5 @@
+"use strict";
+
 const BEER_ME_DATA = {
     userCoords: {},
     breweriesArr: [],
@@ -21,12 +23,13 @@ function getUserLocation() {
 
         $('.lds-default').remove();
         $(`
-        <form name='brewery-search' class='brewery-search' autocomplete='off'>
+        <form name='brewery-search' class='brewery-search' autocomplete='off' aria-label='search form'>
             <fieldset>
                 <legend>Enter Location</legend>
                 <p class='legend-sub'>Search by City, State, or Post Code</p>
 
-                <label for="city"><input type="text" id="city" name="city" placeholder="e.g Chicago, London, MK45 4EP"></label>
+                <label for="city"></label>
+                <input type="text" id="city" name="city" placeholder="e.g Chicago, London, MK45 4EP">
 
                 <label for='radius'>Search within:</label>
                 <select form='brewery-search' name='radius' id='radius'>
@@ -258,6 +261,8 @@ function getExtraDetails(index, brewery) {
             fields: ['opening_hours', 'website']
         };
 
+        let service = new google.maps.places.PlacesService(map);
+
         service.getDetails(request, callback);
         
         function callback(place, status) {
@@ -354,8 +359,6 @@ function sortResults(propertyRetriever, array, map) {
 
 function renderResults(results, map) {
 
-    //$('#next-page').prop('hidden', false);
-
     let resultsStr = '';
     let ratingStrFinal = '';
 
@@ -383,11 +386,11 @@ function renderResults(results, map) {
                 let ratingDec = parseInt(ratingArr[1]);
 
                 for (let j = 1; j <= ratingWhole; j++) {
-                    ratingStrFinal += `<img class='star' src='images/star.png' alt='rating image'>`;
+                    ratingStrFinal += `<img class='star' src='images/star.png'>`;
                 }
 
                 if (ratingDec > 0 || !isNaN(ratingDec)) {
-                    ratingStrFinal += `<img class='star' src='images/star-${ratingDec}.png' alt='rating image'>`;
+                    ratingStrFinal += `<img class='star' src='images/star-${ratingDec}.png'>`;
                 }
                 
 
@@ -407,7 +410,7 @@ function renderResults(results, map) {
                 <span id='${results[i].place_id}' class='hidden'></span>
                 <div class='card-body front'>
                     <div class='card-logo__wrapper'>
-                        <img class='card-logo' src='images/bottlecap.png' alt='brewery icon'> 
+                        <img class='card-logo' src='images/bottlecap.png'> 
                     </div>
                     <p class='brewery-name'>${results[i].name}</p>
                     <p class='distance'>${results[i].distance.text}</p>
@@ -425,7 +428,7 @@ function renderResults(results, map) {
 
         resultsStr += `</div>`;
 
-        $(resultsStr).insertBefore('.js-pagination');
+        $(resultsStr).insertBefore('.js-results-end');
         
         BEER_ME_DATA.arrayIndex += 4;
 
@@ -455,7 +458,7 @@ function setMarkers(map) {
 
     if (BEER_ME_DATA.markers.length === 0) {
 
-        for (i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
+        for (let i = 0; i < BEER_ME_DATA.breweriesArr.length; i++) {
             
             let breweryLatLng = {lat: BEER_ME_DATA.breweriesArr[i].lat, lng: BEER_ME_DATA.breweriesArr[i].lng};
 
@@ -806,14 +809,7 @@ function initMap() {
         radius: searchRadius
     };
 
-    service = new google.maps.places.PlacesService(map);
-
-    let getNextPage = null;
-    let moreButton = document.getElementById('next-page');
-    moreButton.onclick = function() {
-        moreButton.disabled = true;
-        if (getNextPage) getNextPage();
-    };
+    let service = new google.maps.places.PlacesService(map);
 
     service.textSearch(request, callback);
 
