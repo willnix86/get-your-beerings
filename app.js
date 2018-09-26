@@ -282,7 +282,7 @@ function getExtraDetails(index, brewery) {
 
                 } else {
 
-                    hours = `For our hours of business, please check the ${BEER_ME_DATA.breweriesArr[index].name} website.`;
+                    hours = `For our opening times, please check out our website.`;
                     
                 }
 
@@ -358,12 +358,16 @@ function renderResults(results, map) {
     //$('#next-page').prop('hidden', false);
 
     let resultsStr = '';
+    let ratingStrFinal = '';
 
     for (let rowNumber = 0; rowNumber < BEER_ME_DATA.numberOfRows; rowNumber++) {
 
         resultsStr = `<div class='js-results row' aria-live='polite'>`;
 
         for (let columnNumber = 0, i = BEER_ME_DATA.arrayIndex; columnNumber < BEER_ME_DATA.numberOfCols; columnNumber++, i++) {
+
+            let addArr = results[i].formatted_address.split(",");
+            let address = addArr.join('<br>');
 
             if (results[i].distance.value == null || results[i].distance.text == null) {
                 results[i].distance = {
@@ -374,19 +378,31 @@ function renderResults(results, map) {
 
             if (results[i].rating != null) {
 
-                results[i].ratingObj = {
-                    value: results[i].rating,
-                    text: results[i].rating.toString()
+                let ratingToStr = results[i].rating.toString();
+                let ratingArr = ratingToStr.split('.');
+                let ratingWhole = parseInt(ratingArr[0]);
+                let ratingDec = parseInt(ratingArr[1]);
+
+                console.log(ratingArr);
+
+                for (let j = 1; j <= ratingWhole; j++) {
+                    ratingStrFinal += `<img class='star' src='images/star.png' alt='a star bottle-cap'>`;
                 }
+
+                if (ratingDec > 0 || !isNaN(ratingDec)) {
+                    ratingStrFinal += `<img class='star' src='images/star-${ratingDec}.png'>`;
+                }
+                
+
+                // results[i].ratingObj = {
+                //     value: results[i].rating,
+                //     text: results[i].rating.toString()
+            
             } else {
 
                 results[i].ratingObj.text = 'N/A';
 
             }
-
-            // for (let i = 1; i <= results[i].rating; i++) {
-            //     ratingStr += `<img class='star' src='images/star.png' alt='a star bottle-cap'>`;
-            // }
     
             resultsStr += `
             <div id='${i}' class='col-3 card'>
@@ -398,14 +414,14 @@ function renderResults(results, map) {
                     <p class='brewery-name'>${results[i].name}</p>
                     <p class='distance'>${results[i].distance.text}</p>
                     <address class='card-text'>
-                    ${results[i].formatted_address}
+                    ${address}
                     </address>
-                    <p class='rating'>Rating: ${results[i].ratingObj.text}</p>
+                    <div class='rating'>${ratingStrFinal}</div>
                 </div>
             </div>
             `;
 
-            ratingStr = '';
+            ratingStrFinal = '';
 
         }
 

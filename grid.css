@@ -42,6 +42,10 @@
     margin: 0 1% 50px 1%;
   }
 
+  .card {
+    height: 340px;
+  }
+
 }
 
 /* Larger screens */
@@ -69,9 +73,17 @@
   
 }
 
-@media only screen and (min-width: 769px) and (max-width: 920px) {
+@media only screen and (min-width: 769px) and (max-width: 1031px) {
   
   .card {
-    height: 340px
+    height: 380px
   }
+}
+
+@media only screen and (min-width: 1032px) {
+
+  .card {
+    height: 350px;
+  }
+
 }

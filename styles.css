@@ -191,8 +191,14 @@ button[type='submit']:focus, #next-page:focus {
 }
 
 .rating {
+    margin-top: 20px;
     font-size: 15px;
     width: 100%;
+}
+
+.star {
+    height: 25px;
+    width: 25px;
 }
 
 address, .distance {
