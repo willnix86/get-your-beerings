@@ -13,6 +13,7 @@ const BEER_ME_DATA = {
     mapStatus: false
 }
 
+// Get user's coordinates and load form
 function getUserLocation() {
 
     loadingScreen();
@@ -231,6 +232,7 @@ function getDistances(breweries, map) {
     
 }
 
+// See which side of a brewery's card is showing and switch to other (getting details if necessary)
 function checkCardFace(index, place_id){
 
     if ($(`#${index}`).children().hasClass('back')) {
@@ -1110,4 +1112,6 @@ function resetMap() {
 
 }
 
+
+// Watch for click events, and get user Coords as soon as page loads
 $(watchClicks(), getUserLocation());
