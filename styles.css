@@ -12,7 +12,7 @@ header {
 
 h1 {
     margin-bottom: -10px;
-    font-family: 'Cherry Swash', cursive;
+    font-family: 'Cherry Swash', 'Open Sans', sans-serif;
     font-size: 50px;
     font-weight: bold;
 }
