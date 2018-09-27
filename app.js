@@ -451,7 +451,7 @@ function renderResults(results, map) {
 
         resultsStr += `</div>`;
 
-        $(resultsStr).insertBefore('.js-pagination');
+        $(resultsStr).insertBefore('.js-results-end');
         
         BEER_ME_DATA.arrayIndex += 4;
 
@@ -857,16 +857,16 @@ function initMap() {
     };
 
     let service = new google.maps.places.PlacesService(map);
-
+    
     service.textSearch(request, callback);
 
-    function callback(results, status) {
+    function callback(results, status, pagination) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
             for (var i = 0; i < results.length; i++) {
                 BEER_ME_DATA.breweriesArr.push(results[i]);  
                 BEER_ME_DATA.breweriesArr[i].lat = results[i].geometry.location.lat();
                 BEER_ME_DATA.breweriesArr[i].lng = results[i].geometry.location.lng();
-                }
+            }
 
             getDistances(BEER_ME_DATA.breweriesArr, map);
         }
