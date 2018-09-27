@@ -451,7 +451,7 @@ function renderResults(results, map) {
 
         resultsStr += `</div>`;
 
-        $(resultsStr).insertBefore('.js-results-end');
+        $(resultsStr).insertBefore('.js-pagination');
         
         BEER_ME_DATA.arrayIndex += 4;
 
@@ -1178,7 +1178,6 @@ function resetMap() {
     setMarkers(map);
 
 }
-
 
 // Watch for click events, and get user Coords as soon as page loads
 $(watchClicks(), getUserLocation());
