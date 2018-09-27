@@ -12,8 +12,9 @@ header {
 
 h1 {
     margin-bottom: -10px;
-    font-family: 'Cherry Swash', 'Open Sans', sans-serif;
+    font-family: 'Patua One', 'Open Sans', sans-serif;
     font-size: 50px;
+    letter-spacing: 2px;
     font-weight: bold;
 }
 .logo {
@@ -132,12 +133,16 @@ button[type='submit']:focus {
 }
 
 .marker-window {
-    width: 70%;
     margin: 0 auto;
 }
 
 .marker-title {
     word-wrap: break-word;
+}
+
+.marker-title__user {
+    color: black;
+    font-weight: bold;
 }
 
 .marker-logo {

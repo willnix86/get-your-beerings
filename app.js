@@ -163,7 +163,7 @@ function getSearchLatLng (search) {
                         <section class='js-alert' role="alert" aria-live='assertive'>
                             <p>${error}</p>
                         </section>
-                    `).insertAfter('form');
+                    `).insertAfter('.brewery-search');
                 $('.aria-alert').append(`<p>${error}</p>`);
             })
         } else if (response.ok) {
@@ -477,7 +477,9 @@ function setMarkers(map) {
         scaledSize: new google.maps.Size(30, 30),
     } 
 
-    let infowindow = new google.maps.InfoWindow();
+    let infowindow = new google.maps.InfoWindow({
+        maxWidth: 250
+    });
 
     if (BEER_ME_DATA.markers.length === 0) {
 
@@ -516,12 +518,12 @@ function setMarkers(map) {
 
         var markerCluster = new MarkerClusterer(map, BEER_ME_DATA.markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-      }
-      
-      $('.lds-default').remove();
-      $('#map').show();
+    }
+    
+    $('.lds-default').remove();
+    $('#map').show();
 
-      if ($('#sort-results').length == 0) {
+    if ($('#sort-results').length == 0) {
         $(`
             <form name='sort-results' id='sort-results'>
                 <fieldset>
@@ -824,12 +826,32 @@ function initMap() {
 
     BEER_ME_DATA.map = map;
 
+    let userLocation = {lat: BEER_ME_DATA.userCoords.lat, lng: BEER_ME_DATA.userCoords.lng};
+
+    let marker = new google.maps.Marker({position: userLocation, map: map});
+
+    let infowindow = new google.maps.InfoWindow({
+        maxWidth: 250,
+        content: `
+            <div class='marker-window'>
+                <p class='marker-title__user'>You are here!</p>
+            </div>`,
+        position: userLocation
+    });
+
+    google.maps.event.addListener(marker, 'click', function() {
+
+            infowindow.open(map, marker);
+
+        }
+    );
+
     let searchLocation = {lat: BEER_ME_DATA.latLng.lat,lng: BEER_ME_DATA.latLng.lng};
 
     let searchRadius = BEER_ME_DATA.radius;
     
     let request = {
-        query: 'brewery',
+        query: 'brewery, pub',
         location: searchLocation,
         radius: searchRadius
     };
@@ -1130,6 +1152,26 @@ function resetMap() {
         disableDefaultUI: true,
         zoomControl: true
     });
+
+    let userLocation = {lat: BEER_ME_DATA.userCoords.lat, lng: BEER_ME_DATA.userCoords.lng};
+
+    let marker = new google.maps.Marker({position: userLocation, map: map});
+
+    let infowindow = new google.maps.InfoWindow({
+        maxWidth: 250,
+        content: `
+            <div class='marker-window'>
+                <p class='marker-title__user'>You are here!</p>
+            </div>`,
+        position: userLocation
+    });
+
+    google.maps.event.addListener(marker, 'click', function() {
+
+            infowindow.open(map, marker);
+
+        }
+    )
 
     BEER_ME_DATA.map = map;
 
