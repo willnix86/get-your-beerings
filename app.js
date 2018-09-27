@@ -24,10 +24,16 @@ function getUserLocation() {
 
         $('.lds-default').remove();
         $(`
+        <form name='nearby-search' class='nearby-search' aria-label='search nearby'>
+            <label for="nearby"></label>
+            <button type="submit" id="nearby" name="nearby">Search Near Me</button>
+        </form>
+
+        <p class="form-break">OR</p>
+
         <form name='brewery-search' class='brewery-search' autocomplete='off' aria-label='search form'>
             <fieldset>
-                <legend>Enter Location</legend>
-                <p class='legend-sub'>Search by City, State, or Post Code</p>
+                <legend>Search by City, State, or Post Code</legend>
 
                 <label for="city"></label>
                 <input type="text" id="city" name="city" placeholder="e.g Chicago, London, MK45 4EP">
@@ -53,7 +59,13 @@ function getUserLocation() {
 
         $('.lds-default').remove();
         $(`
+        <form name='nearby-search' class='nearby-search' aria-label='search nearby'>
+            <label for="nearby"></label>
+            <button type="submit" id="nearby" name="nearby">Search Near Me</button>
+        </form>
+        
         <form name='brewery-search' class='brewery-search'>
+            
             <fieldset>
                 <legend>Enter Location</legend>
 
@@ -67,7 +79,6 @@ function getUserLocation() {
                 </select>
                 
                 <label for="submit"><button type="submit" id="submit" name="submit">Submit</button></label>
-
             </fieldset>
         </form>
 
@@ -99,6 +110,15 @@ function watchClicks() {
         getSearchLatLng(BEER_ME_DATA.search);
         $('#city').val("");
     });
+
+    $('body').on('submit', '.nearby-search', function(e) {
+        e.preventDefault();
+        BEER_ME_DATA.latLng = {
+            lat: parseFloat(BEER_ME_DATA.userCoords.lat),
+            lng: parseFloat(BEER_ME_DATA.userCoords.lng)
+        };
+        initMap();
+    })
 
     $('main').on('change', '.sort-target', function(e){
         $('.js-results').remove();
@@ -160,7 +180,7 @@ function addSearchCoords(searchCoords) {
         lat: parseFloat(searchCoords.lat),
         lng: parseFloat(searchCoords.lon)
     }
-   
+
     initMap();
 }
 
@@ -247,7 +267,7 @@ function checkCardFace(index, place_id){
                     <address class='card-text'>
                     ${BEER_ME_DATA.breweriesArr[index].formatted_address}
                     </address>
-                    <p class='rating'>Rating: ${BEER_ME_DATA.breweriesArr[index].ratingObj.text}</p>
+                    <p class='rating'>${BEER_ME_DATA.breweriesArr[index].ratingObj.imgs}</p>
                 </div>
             </div>
         `);
@@ -424,6 +444,7 @@ function renderResults(results, map) {
             </div>
             `;
 
+            results[i].ratingObj.imgs = ratingStrFinal;
             ratingStrFinal = '';
 
         }

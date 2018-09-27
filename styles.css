@@ -27,9 +27,22 @@ form, section, main, navigation {
     text-align: center;
 }
 
-form {
+main {
+    margin-top: -35px;
+}
+
+.nearby-search {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.brewery-search {
     margin-top: 20px;
     margin-bottom: 50px;
+}
+
+.form-break {
+    text-align: center;
 }
 
 fieldset {
@@ -40,16 +53,10 @@ fieldset {
 }
 
 legend {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.legend-sub {
-    font-size: 12px;
+    font-size: 15px;
     margin-bottom: 20px;
 }
-
-input[type='text'], button[type='submit'] {
+input[type='text'], button[type='submit'], #nearby {
     border: none;
     box-shadow: none;
     border-radius: 5px;
@@ -68,6 +75,10 @@ input[type='text'] {
 input[type='text']:focus, select:focus, .card-title:focus  {
     outline: 3px solid orange;
     outline-offset: -.15em;
+}
+
+#nearby {
+    width: 150px;
 }
 
 select {
