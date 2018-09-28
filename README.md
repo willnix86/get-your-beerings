@@ -14,7 +14,7 @@ Features
 Live Demo
 ---------
 
-Demo: https://www.devnx.io/beerings
+Demo: https://www.getyourbeerings.com
 
 
 Screenshots
