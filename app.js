@@ -199,7 +199,7 @@ function resetResults() {
 
 function formatQueryParams(params) {
     const queryItems = Object.keys(params)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     return queryItems.join('&');
 }
 
@@ -470,7 +470,7 @@ function renderResults(results, map) {
 function setMarkers(map) {
 
     let image = {
-        url: 'https://devnx.io/beerings/images/marker.png',
+        url: 'images/marker.png',
         size: new google.maps.Size(60, 60),
         origin: new google.maps.Point(0, 0),
         anchor: new google.maps.Point(15, 21),
