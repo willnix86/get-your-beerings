@@ -10,8 +10,41 @@ const BEER_ME_DATA = {
     radius: 3218.69,
     latLng: {},
     markers: [],
-    mapStatus: false
+    mapStatus: false,
 }
+
+function setUpPWA() {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    BEER_ME_DATA.deferredPrompt = e; 
+    // Update UI notify the user they can add to home screen
+    addToHomeScreen();
+  });
+}
+
+function addToHomeScreen() {
+  let a2hs = document.getElementById('a2hs');
+  a2hs.style.display = 'block';
+
+  a2hs.addEventListener('click', (e) => {
+    // hide our user interface that shows our A2HS button
+    a2hs.style.display = 'none';
+    // Show the prompt
+    BEER_ME_DATA.deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    BEER_ME_DATA.deferredPrompt.userChoice
+      .then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        BEER_ME_DATA.deferredPrompt = null;
+      });
+  });
+};
 
 // Get user's coordinates and load form
 function getUserLocation() {
@@ -1180,4 +1213,4 @@ function resetMap() {
 }
 
 // Watch for click events, and get user Coords as soon as page loads
-$(watchClicks(), getUserLocation());
+$(watchClicks(), getUserLocation(), setUpPWA());

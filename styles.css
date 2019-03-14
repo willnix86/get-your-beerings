@@ -80,7 +80,13 @@ input[type='text']:focus, select:focus, .card-title:focus  {
     outline-offset: -.15em;
 }
 
-#nearby {
+#a2hs {
+  height: 50px;
+  width: 110px;
+  display: none;
+}
+
+#nearby, #a2hs {
     width: 150px;
 }
 

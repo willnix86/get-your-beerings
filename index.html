@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Get Your Beerings</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Get Your Beerings</title>
+    <meta name="description" content="Find pubs, breweries, and beer-gardens near you or in an area you plan to visit">
+    <meta name="keywords" content="beer, location, pub, brewery, garden, near, nearby">
+    <meta name="author" content="Will Nixon">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <link rel="stylesheet" type="text/css" href="reset.css" /> -->
     <link href="https://fonts.googleapis.com/css?family=Cherry+Swash|Josefin+Sans|Open+Sans|Patua+One" rel="stylesheet">
@@ -20,9 +23,10 @@
 <body>
     
     <header role="banner">
-        <img class="logo" src="images/beerme.png">
+        <img class="logo" src="images/beerme.png" alt="Beerings Logo">
         <h1>Get Your Beerings!</h1>
         <p>Find breweries, pubs, and beer gardens near you</p>
+        <button type="submit" id="a2hs">Add to Home Screen</button>
     </header>
     <div class="aria-alert sr-only"role="region" aria-live="assertive" aria-atomic="true" aria-label="alert box"></div>
     
@@ -34,12 +38,19 @@
 
     <footer role="contentinfo">
             <p>&copy 2018 - Will Nixon</p>
-            <p class="credits">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="https://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></p>
+            <p class="credits">Icons made by <a href="https://www.freepik.com" title="Freepik" rel="noreferrer">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon" rel="noreferrer">www.flaticon.com</a> is licensed by <a href="https://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank" rel="noreferrer">CC 3.0 BY</a></p>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBC767wPk3dq2i5FRXYaqoBjc4JakUICA&libraries=places"></script>
     <script src="markerclusterer.js"></script>
     <script src="app.js"></script>
-</body>
+    <script>
+        if('serviceWorker' in navigator) {
+          navigator.serviceWorker
+            .register('/serviceworker.js')
+            .then(function() { console.log("Service Worker Registered"); });
+        };
+    </script>
+  </body>
 </html>
