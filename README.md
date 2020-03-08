@@ -21,19 +21,19 @@ Screenshots
 -----------
 
 ### Desktop
-![Screenshot of the 'Get Your Beerings' Front Page](/images/front-page.png)
+![Screenshot of the 'Get Your Beerings' Front Page](/public/images/front-page.png)
 
-![Screenshot of the 'Get Your Beerings' Map](/images/map.png)
+![Screenshot of the 'Get Your Beerings' Map](/public/images/map.png)
 
-![Screenshot of the 'Get Your Beerings' Result Cards](/images/results.png)
+![Screenshot of the 'Get Your Beerings' Result Cards](/public/images/results.png)
 
 
 ### Mobile
-![Screenshot of the 'Get Your Beerings' Mobile Front Page](/images/front-page-mob.png)
+![Screenshot of the 'Get Your Beerings' Mobile Front Page](/public/images/front-page-mob.png)
 
-![Screenshot of the 'Get Your Beerings' Mobile Map](/images/map-mob.png)
+![Screenshot of the 'Get Your Beerings' Mobile Map](/public/images/map-mob.png)
 
-![Screenshot of the 'Get Your Beerings' Mobile Result Cards](/images/results-mob.png)
+![Screenshot of the 'Get Your Beerings' Mobile Result Cards](/public/images/results-mob.png)
 
 
 Built with:
