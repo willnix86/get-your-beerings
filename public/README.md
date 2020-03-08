@@ -14,7 +14,7 @@ Features
 Live Demo
 ---------
 
-Demo: https://www.getyourbeerings.com
+[Demo](https://beerings.now.sh/)
 
 
 Screenshots
@@ -57,4 +57,4 @@ APIs used:
 Author
 ------
 
-[Will Nixon](https://www.devnx.io)
+[Will Nixon](https://www.willnixon.dev)
